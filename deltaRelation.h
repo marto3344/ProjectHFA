@@ -14,7 +14,7 @@ class DeltaRelation
    const State& getEnd()const;
    
 
-   friend std::ostream& operator<<(std::ostream out, const DeltaRelation &relation);
+   friend std::ostream& operator<<(std::ostream& out, const DeltaRelation &relation);
 
 
    private:

@@ -12,7 +12,6 @@ void Automata::Print() const
 {
     for (DeltaRelation delta : edges)
     {
-        std::cout << "(" << delta.getStart().getStateName() << "," << delta.getEnd().getStateName() << ")"
-                  << " ";
+        std::cout<<delta;
     }
 }
