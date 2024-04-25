@@ -8,7 +8,15 @@ class DeltaRelation
    public:
    DeltaRelation(State _start,State _end, char _label);
    ~DeltaRelation()=default;
+
+   char getLabel()const;
+   const State& getStart()const;
+   const State& getEnd()const;
+   
+
    friend std::ostream& operator<<(std::ostream out, const DeltaRelation &relation);
+
+
    private:
     State start;
     State end;

@@ -7,11 +7,12 @@ class Automata{
     public:
     Automata(unsigned _id,std::vector<State> _states,std::vector<DeltaRelation> _edges);
     Automata(std::string regex);
-
-    unsigned getId()const;
+    ~Automata()=default;
     
+    unsigned getId()const;
+
     void Print() const;
-    void Save()const;
+    void Save(std::string filename)const;
     bool Empty()const;
     bool Finite()const;
     bool Deterministic()const;
