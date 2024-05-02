@@ -21,19 +21,6 @@ DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
     
 
 }
-// DeltaRelation::~DeltaRelation()
-// {
-//     if(start)
-//     {
-//       delete []start;
-//     }
-//     if(end)
-//     {
-//         delete []end;
-//     }
-    
-// }
-
 char DeltaRelation:: getLabel()const
 {
     return label;

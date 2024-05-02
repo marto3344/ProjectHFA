@@ -5,9 +5,11 @@
 #include<string>
 class Automata{
     public:
-    Automata(unsigned _id,std::vector<State> _states,std::vector<DeltaRelation> _edges);
+    Automata(unsigned _id,std::vector<DeltaRelation> _edges);
     Automata(std::string regex);
     ~Automata()=default;
+
+    const std::vector<State> getStates();
     
     unsigned getId()const;
 
@@ -27,6 +29,8 @@ class Automata{
     unsigned int id;
     std::vector<State>states;
     std::vector<DeltaRelation>edges;
+    void CalculateStates();
+    bool ContainsStateName(const std::string)const;
     public:
     Automata getUniqueStates(const Automata&other)const;
 };
