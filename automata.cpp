@@ -27,18 +27,18 @@ void Automata::Print() const
         resultStates[states.size()+i]=other.states[i];    
     }
     std::vector<DeltaRelation>resultEdges=std::vector<DeltaRelation>(edges.size()+other.edges.size());
-    // for (size_t i = 0; i < edges.size(); i++)
-    // {
-    //    resultEdges[i]=edges[i];
-    // }
-    // for (size_t i = 0; i < other.edges.size(); i++)
-    // {
-    //     resultEdges[edges.size()+i]=other.edges[i];    
-    // }
-    // for (size_t i = 0; i < resultStates.size(); i++)
-    // {
-    //    resultStates[i].setStateName(std::to_string(i));
-    // }
+    for (size_t i = 0; i < edges.size(); i++)
+    {
+       resultEdges[i]=edges[i];
+    }
+    for (size_t i = 0; i < other.edges.size(); i++)
+    {
+        resultEdges[edges.size()+i]=other.edges[i];    
+    }
+    for (size_t i = 0; i < resultStates.size(); i++)
+    {
+       resultStates[i].setStateName(std::to_string(i));
+    }
     Automata result(0,resultStates,resultEdges);
     return result;
  }

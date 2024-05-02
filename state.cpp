@@ -21,8 +21,7 @@
   void State::setStateName(const std::string name)
   {
     //TODO string validation
-    stateName.clear();
-    stateName+=name;
+    stateName=name;
   }
 
   bool State::ifFinal() const
