@@ -17,9 +17,9 @@ class Automata{
     bool Finite()const;
     bool Deterministic()const;
     bool Recognize(std::string word)const;
-    Automata& Union(const Automata &other)const;
-    Automata& Concat(const Automata &other)const;
-    Automata& Un(const Automata &other)const;
+    Automata Union(const Automata &other)const;
+    Automata Concat(const Automata &other)const;
+    Automata Un(const Automata &other)const;
     
 
 
@@ -27,6 +27,6 @@ class Automata{
     unsigned int id;
     std::vector<State>states;
     std::vector<DeltaRelation>edges;
-
-    std::vector<State> getUniqueStates(const Automata&other)const;
+    public:
+    Automata getUniqueStates(const Automata&other)const;
 };

@@ -7,8 +7,9 @@ class DeltaRelation
 {
    public:
    DeltaRelation(State _start,State _end, char _label);
-   ~DeltaRelation()=default;
-
+   DeltaRelation();
+   ~DeltaRelation();
+   DeltaRelation& operator=(const DeltaRelation &other);
    char getLabel()const;
    const State& getStart()const;
    const State& getEnd()const;
@@ -18,8 +19,8 @@ class DeltaRelation
 
 
    private:
-    State start;
-    State end;
+    State* start;
+    State* end;
     char label;
 };
 
