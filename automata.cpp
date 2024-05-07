@@ -1,6 +1,10 @@
 #include"automata.h"
 #include<iostream>
-Automata::Automata(unsigned _id, std::vector<DeltaRelation> _edges) : id(_id), edges(_edges){};
+Automata::Automata(unsigned _id, std::vector<DeltaRelation> _edges) : id(_id), edges(_edges){
+
+  CalculateStates();
+
+};
 
 unsigned Automata::getId() const
 {
