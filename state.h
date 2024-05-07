@@ -11,7 +11,7 @@ class State{
   State&  operator=(const State&other);
   const std::string getStateName()const;
   void setStateName(const std::string name);
-  bool ifFinal()const;
+  bool isFinal()const;
   bool isInitial()const;
   void setFinal(bool const value);
   void setInitial(bool const value);

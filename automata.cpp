@@ -19,9 +19,8 @@ void Automata::Print() const
     }
 }
 
- Automata Automata:: getUniqueStates(const Automata&other)const
- {
-    //Dokato ima state sus sushtoto ime dobavqme { ime}
+ Automata Automata:: getUniqueStates(const Automata&other)
+ {  
     std::vector<DeltaRelation>resultEdges=std::vector<DeltaRelation>(edges.size()+other.edges.size());
     for (size_t i = 0; i < edges.size(); i++)
     {
@@ -29,8 +28,21 @@ void Automata::Print() const
     }
     for (size_t i = 0; i < other.edges.size(); i++)
     {
-
-        resultEdges[edges.size()+i]=other.edges[i];    
+        std::string resultStart=other.edges[i].getStart().getStateName();
+        std::string resultEnd=other.edges[i].getEnd().getStateName();
+        while (other.ContainsStateName(resultStart))
+        {
+            resultStart="{"+resultStart+"}";
+        }
+        while (other.ContainsStateName(resultEnd))
+        {
+            resultEnd="{"+resultEnd+"}";
+        }
+        State * resultStartState=new State(other.edges[i].getStart());
+        resultStartState->setStateName(resultStart);
+        State* resultEndState=new State(other.edges[i].getEnd());
+        resultEndState->setStateName(resultEnd);
+        resultEdges[edges.size()+i]=DeltaRelation(*resultStartState,*resultEndState,other.edges[i].getLabel());    
     }
    
     Automata result(0,resultEdges);
@@ -55,6 +67,10 @@ void Automata:: CalculateStates(){
 
 bool Automata:: ContainsStateName(const std::string name)const
 {
+    if(states.empty())
+    {
+        return false;
+    }
     for(State state:states)
     {
         if(state.getStateName()==name)

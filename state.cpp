@@ -24,7 +24,7 @@
     stateName=name;
   }
 
-  bool State::ifFinal() const
+  bool State::isFinal() const
   {
     return final;
   }

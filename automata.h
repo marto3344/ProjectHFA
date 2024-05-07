@@ -32,5 +32,5 @@ class Automata{
     void CalculateStates();
     bool ContainsStateName(const std::string)const;
     public:
-    Automata getUniqueStates(const Automata&other)const;
+    Automata getUniqueStates(const Automata&other);
 };
