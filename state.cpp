@@ -55,7 +55,6 @@
   }
  std::ostream&  operator<<(std::ostream& out,const State&other)
  {
-    //out<<"{"<<other.stateName<<"}";
-    out<<other.stateName;
+    out<<other.stateName<<" {"<<other.final<<" "<<other.initial<<"}";
     return out;
  }

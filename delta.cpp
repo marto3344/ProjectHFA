@@ -7,7 +7,12 @@ DeltaRelation::DeltaRelation()
     end=nullptr;
     label=0;
 }
-
+DeltaRelation::DeltaRelation(const DeltaRelation&other)
+{
+   start=new State( *other.start);
+    end=new State( *other.end);
+   label=other.label;
+}
 DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
 {
     if (this==&other)
@@ -35,6 +40,6 @@ State* DeltaRelation:: getEnd()const
     return end;
 }
 std::ostream& operator<<(std::ostream& out, const DeltaRelation &delta){
-    out<< "(" << delta.getStart()->getStateName() << ","<<delta.getLabel()<<","<< delta.getEnd()->getStateName() << ")"<< " ";
+    out<< "(" << *delta.getStart()<< ","<<delta.getLabel()<<","<< *delta.getEnd() << ")"<< " ";
     return out;
 }

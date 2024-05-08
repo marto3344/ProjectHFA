@@ -8,6 +8,7 @@ class DeltaRelation
    public:
    DeltaRelation(State _start,State _end, char _label);
    DeltaRelation();
+   DeltaRelation(const DeltaRelation&other);
    ~DeltaRelation();
    DeltaRelation& operator=(const DeltaRelation &other);
    char getLabel()const;
