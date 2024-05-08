@@ -7,9 +7,9 @@ class Automata{
     public:
     Automata(unsigned _id,std::vector<DeltaRelation> _edges);
     Automata(std::string regex);
-    ~Automata()=default;
+    ~Automata();
 
-    const std::vector<State> getStates();
+    const std::vector<State*> getStates();
     
     unsigned getId()const;
 
@@ -27,7 +27,7 @@ class Automata{
 
     private:
     unsigned int id;
-    std::vector<State>states;
+    std::vector<State*>states;
     std::vector<DeltaRelation>edges;
     void CalculateStates();
     bool ContainsStateName(const std::string)const;

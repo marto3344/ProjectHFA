@@ -21,19 +21,20 @@ DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
     
 
 }
+DeltaRelation::~DeltaRelation()=default;
 char DeltaRelation:: getLabel()const
 {
     return label;
 }
-const State& DeltaRelation:: getStart()const
+State* DeltaRelation:: getStart()const
 {
-    return *start;
+    return start;
 }
-const State& DeltaRelation:: getEnd()const
+State* DeltaRelation:: getEnd()const
 { 
-    return *end;
+    return end;
 }
 std::ostream& operator<<(std::ostream& out, const DeltaRelation &delta){
-    out<< "(" << delta.getStart().getStateName() << ","<<delta.getLabel()<<","<< delta.getEnd().getStateName() << ")"<< " ";
+    out<< "(" << delta.getStart()->getStateName() << ","<<delta.getLabel()<<","<< delta.getEnd()->getStateName() << ")"<< " ";
     return out;
 }
