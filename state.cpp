@@ -14,7 +14,6 @@
     final=other.final;
      initial=other.initial;
   }
-  State::~State()=default;
   const std::string State::getStateName() const
   {
     return stateName;

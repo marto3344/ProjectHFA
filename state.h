@@ -7,7 +7,7 @@ class State{
   State(std::string _name,bool _final,bool _initial);
   State();
   State(const State &other);
-  ~State();
+  ~State()=default;
   State&  operator=(const State&other);
   const std::string getStateName()const;
   void setStateName(const std::string name);

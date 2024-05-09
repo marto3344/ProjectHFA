@@ -26,7 +26,6 @@ DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
     
 
 }
-DeltaRelation::~DeltaRelation()=default;
 char DeltaRelation:: getLabel()const
 {
     return label;
