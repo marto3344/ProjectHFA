@@ -1,6 +1,6 @@
 #include "deltaRelation.h"
 
-DeltaRelation:: DeltaRelation(State _start,State _end, char _label):start(&_start),end(&_end),label(_label){}
+DeltaRelation:: DeltaRelation(State &_start, State &_end, char _label):start(&_start),end(&_end),label(_label){}
 DeltaRelation::DeltaRelation()
 {
     start=nullptr;

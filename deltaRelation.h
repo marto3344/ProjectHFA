@@ -6,7 +6,7 @@
 class DeltaRelation
 {
    public:
-   DeltaRelation(State _start,State _end, char _label);
+   DeltaRelation( State &_start, State &_end, char _label);
    DeltaRelation();
    DeltaRelation(const DeltaRelation&other);
    ~DeltaRelation() = default;

@@ -1,5 +1,6 @@
 #include"automata.h"
 #include<iostream>
+#include"utilities.h"
 Automata::Automata(unsigned _id, std::vector<DeltaRelation> _edges) : id(_id), edges(_edges){
 
   CalculateStates();
@@ -222,11 +223,12 @@ bool Automata:: ContainsStateName(const std::string name)const
   bool Automata:: Recognize(std::string word)
   {
     std::vector<State*>currStates;
-    currStates=TraversalWithChar(getInitialStates(),word[0]);
+    //currStates=TraversalWithChar(getInitialStates(),word[0]);
+    Utilities::MoveElementsRValue(currStates,TraversalWithChar(getInitialStates(),word[0]));
     for (size_t i = 1; i < word.size(); i++)
     {
         if(currStates.empty())return false;
-        currStates=TraversalWithChar(currStates,word[i]);
+        Utilities::MoveElementsRValue(currStates,TraversalWithChar(currStates,word[i]));
     }
     for (State* state:currStates)
     {
