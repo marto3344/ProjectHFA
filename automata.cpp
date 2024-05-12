@@ -13,6 +13,7 @@ Automata::Automata(const Automata &other)
 }
 Automata::~Automata()
 {
+    //std::cout<<"~Automata";
     for (State* state:states)
     {
         delete state;
@@ -45,13 +46,13 @@ void Automata::Print() const
     }
     for (size_t i = 0; i < other.edges.size(); i++)
     {
-        std::string resultStart=other.edges[i].getStart()->getStateName();
-        std::string resultEnd=other.edges[i].getEnd()->getStateName();
-        while (other.ContainsStateName(resultStart))
+        std::string resultStart="{"+other.edges[i].getStart()->getStateName()+"}";
+        std::string resultEnd="{"+other.edges[i].getEnd()->getStateName()+"}";
+        while (other.ContainsStateName(resultStart)||this->ContainsStateName(resultStart))
         {
             resultStart="{"+resultStart+"}";
         }
-        while (other.ContainsStateName(resultEnd))
+        while (other.ContainsStateName(resultEnd)||this->ContainsStateName(resultEnd))
         {
             resultEnd="{"+resultEnd+"}";
         }
@@ -113,6 +114,7 @@ bool Automata:: ContainsStateName(const std::string name)const
                 if (other.states[j]->isInitial())
                 {
                     result.edges.push_back(DeltaRelation(*result.states[i],*other.states[j],'~'));
+                    other.states[j]->setInitial(false);
                 }                
             }           
         }
@@ -141,3 +143,97 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     return result;   
  }
+ std::vector<State*> Automata::EpsiloneClosure(const State&other)
+ {
+    std::vector<State*>resultStates;
+    for (DeltaRelation delta:edges)
+    {
+       if (delta.getStart()==&other &&delta.getLabel()=='~')
+       {
+          resultStates.push_back(delta.getEnd());
+       }
+          
+    }
+    return resultStates;
+
+
+ }
+ void Automata::RemoveEpsilons()
+ {
+
+ }
+ std::vector<State*>Automata::getInitialStates()
+ {
+    std::vector<State*>result;
+    for (State* state:states)
+    {
+        if (state->isInitial())
+        {
+            result.push_back(state);
+        }
+    
+    }
+    return result;
+    std::cout<<"End of Initial";
+ }
+ std::vector<State*>Automata::getFinalStates()
+ {
+    std::vector<State*>result;
+    for (State* state:states)
+    {
+        if (state->isFinal())
+        {
+            result.push_back(state);
+        }
+    
+    }
+    return result;
+
+ }
+
+ bool Automata:: Empty()
+ {
+   if(getFinalStates().empty()|| getInitialStates().empty())
+   {
+      return true;
+   }
+   //TODO DFS 
+   return false;
+ }
+
+
+ std::vector<State*> Automata::TraversalWithChar(const std::vector<State*>&currStates, const char c)
+ {
+   std::vector<State*>result;
+   for (size_t i = 0; i < currStates.size(); i++)
+   {
+     for (size_t j = 0; j < edges.size(); j++)
+     {
+        if (currStates[i]->getStateName()==edges[j].getStart()->getStateName()&&edges[j].getLabel()==c)
+        {
+            result.push_back(edges[j].getEnd());
+        }       
+     }
+     
+   }
+   return result;
+ }
+
+  bool Automata:: Recognize(std::string word)
+  {
+    std::vector<State*>currStates;
+    currStates=TraversalWithChar(getInitialStates(),word[0]);
+    for (size_t i = 1; i < word.size(); i++)
+    {
+        if(currStates.empty())return false;
+        currStates=TraversalWithChar(currStates,word[i]);
+    }
+    for (State* state:currStates)
+    {
+        if(state->isFinal())
+        {
+            return true;
+        }
+    } 
+    return false;
+  }

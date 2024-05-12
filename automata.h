@@ -16,10 +16,10 @@ class Automata{
 
     void Print() const;
     void Save(std::string filename)const;
-    bool Empty()const;
-    bool Finite()const;
+    bool Empty();
+    bool Finite();
     bool Deterministic()const;
-    bool Recognize(std::string word)const;
+    bool Recognize(std::string word);
     Automata Union(const Automata &other)const;
     Automata Concat(const Automata &other)const;
     Automata Un()const;
@@ -32,6 +32,13 @@ class Automata{
     std::vector<DeltaRelation>edges;
     void CalculateStates();
     bool ContainsStateName(const std::string)const;
+    void RemoveEpsilons();
+    std::vector<State*> EpsiloneClosure(const State &other);
+   
+    std::vector<State*>getFinalStates();
+    std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
+    std::vector<State*>getInitialStates();
     public:
     Automata getUniqueStates(const Automata&other)const;
+    
 };
