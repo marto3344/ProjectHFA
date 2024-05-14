@@ -1,5 +1,6 @@
 #include"automata.h"
 #include<iostream>
+#include<fstream>
 #include"utilities.h"
 Automata::Automata(unsigned _id, std::vector<DeltaRelation> _edges) : id(_id), edges(_edges){
 
@@ -238,4 +239,17 @@ bool Automata:: ContainsStateName(const std::string name)const
         }
     } 
     return false;
+  }
+  void Automata:: Save(std::string filename)const
+  {
+    std::ofstream os;
+    os.open(filename,std::ios::app);
+    os<<"id "<<id<<'\n';
+    os<<edges.size()<<'\n';
+    for (DeltaRelation delta:edges)
+    {
+        os<<delta<<'\n';
+    }
+    
+
   }

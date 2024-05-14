@@ -39,6 +39,6 @@ State* DeltaRelation:: getEnd()const
     return end;
 }
 std::ostream& operator<<(std::ostream& out, const DeltaRelation &delta){
-    out<< "(" << *delta.getStart()<< ","<<delta.getLabel()<<","<< *delta.getEnd() << ")"<< " ";
+    out<< *delta.getStart()<< " "<<delta.getLabel()<<" "<< *delta.getEnd();
     return out;
 }
