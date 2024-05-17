@@ -14,6 +14,24 @@
     final=other.final;
      initial=other.initial;
   }
+  State::State(const State &&rhs)
+  {
+    stateName=std::move(rhs.stateName);
+    final=rhs.final;
+    initial=rhs.initial;
+  }
+  State& State::operator=(const State&&rhs)
+  {
+    if(this==&rhs)
+    {
+      return *this;
+    }
+    stateName=std::move(rhs.stateName);
+    final=rhs.final;
+    initial=rhs.initial;
+    return *this;
+    
+  }
   const std::string State::getStateName() const
   {
     return stateName;

@@ -2,8 +2,9 @@
 #include<iostream>
 #include<fstream>
 #include"utilities.h"
-Automata::Automata(unsigned _id, std::vector<DeltaRelation> _edges) : id(_id), edges(_edges){
-
+Automata::Automata(unsigned _id,const std::vector<DeltaRelation>& _edges){
+  id=_id;
+  edges=_edges;
   CalculateStates();
 
 };
@@ -15,11 +16,14 @@ Automata::Automata(const Automata &other)
 }
 Automata::~Automata()
 {
-    //std::cout<<"~Automata";
-    for (State* state:states)
-    {
-        delete state;
-    }
+    // //std::cout<<"~Automata";
+    // for (State* state:states)
+    // {
+    //     if(state!=nullptr)
+    //     {
+    //         delete[]state;
+    //     }
+    // }
     
 }
 unsigned Automata::getId() const

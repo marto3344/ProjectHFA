@@ -5,7 +5,7 @@
 #include<string>
 class Automata{
     public:
-    Automata(unsigned _id,std::vector<DeltaRelation> _edges);
+    Automata(unsigned _id,const std::vector<DeltaRelation>& _edges);
     Automata(const Automata&other);
     Automata(std::string regex);
     ~Automata();

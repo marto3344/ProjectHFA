@@ -6,10 +6,10 @@
 class DeltaRelation
 {
    public:
-   DeltaRelation( State &_start, State &_end, char _label);
+   DeltaRelation(const  State &_start, const State &_end, char _label);
    DeltaRelation();
    DeltaRelation(const DeltaRelation&other);
-   ~DeltaRelation() = default;
+   ~DeltaRelation();
    DeltaRelation& operator=(const DeltaRelation &other);
    char getLabel()const;
    State* getStart()const;

@@ -1,6 +1,10 @@
 #include "deltaRelation.h"
 
-DeltaRelation:: DeltaRelation(State &_start, State &_end, char _label):start(&_start),end(&_end),label(_label){}
+DeltaRelation:: DeltaRelation(const State &_start, const State &_end, char _label){
+  start=new State(_start);
+  end=new State(_end);
+  label=_label;
+}
 DeltaRelation::DeltaRelation()
 {
     start=nullptr;
@@ -10,8 +14,19 @@ DeltaRelation::DeltaRelation()
 DeltaRelation::DeltaRelation(const DeltaRelation&other)
 {
    start=new State( *other.start);
-    end=new State( *other.end);
+   end=new State( *other.end);
    label=other.label;
+}
+DeltaRelation::~DeltaRelation()
+{
+    if(start!=nullptr)
+    {
+        delete start;
+    }
+    if(end!=nullptr)
+    {
+        delete end;
+    }
 }
 DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
 {
