@@ -1,6 +1,6 @@
-#include"State.h"
 #include<cstring>
-
+#include"state.h"
+#include"utilities.h"
   State::State(std::string _name,bool _final,bool _initial):stateName(_name),final(_final),initial(_initial){}
   State::State()
   {
@@ -38,7 +38,10 @@
   }
   void State::setStateName(const std::string name)
   {
-    //TODO string validation
+    if(!Utilities::IsValidStateName(name))
+    {
+      throw "Invalid state name!";
+    }
     stateName=name;
   }
 

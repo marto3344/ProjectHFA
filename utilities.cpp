@@ -8,3 +8,14 @@ void Utilities::MoveElementsRValue(std::vector<State*>&destination,std::vector<S
     }
     
 }
+bool Utilities::IsValidStateName(const std::string name)
+{
+    for (size_t i = 0; i < name.size(); i++)
+    {
+        if(name[i]==' ')
+        {
+            return false;
+        }
+    }
+    return true;
+}
