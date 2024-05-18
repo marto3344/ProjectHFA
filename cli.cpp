@@ -1,18 +1,38 @@
 #include"CLI.h"
 #include<iostream>
 #include<vector>
-CommandInterface::CommandInterface()
+CommandInterface* CommandInterface::interface=nullptr;
+CommandInterface& CommandInterface:: Initialize()
 {
-    streamPtr=nullptr;
-    openedfile="";
+  if(interface!=nullptr)
+  {
+    return *interface;
+  }
+  interface= new CommandInterface();
+  return *interface;   
+}
+CommandInterface::CommandInterface(){}
+CommandInterface::~CommandInterface()
+{
+  std::cout<<"~Interface";
+//     if(streamPtr!=nullptr)
+//     {
+//         delete[]streamPtr;
+//     }
+//     for (Automata* automata:automatas)
+//     {
+//        delete[] automata;
+//     }
+    
 }
 void CommandInterface::Run()const
 {
     std::string command="";
+    std::cout<<"Welcome! Type help to see the list of commands!\n";
     std::cin>>command;
    while (command!="exit")
    {
-    
+      
      
       std::cin>>command; 
    }
