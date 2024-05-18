@@ -17,12 +17,15 @@ void CommandInterface::Run() const
   std::string command = "";
   std::cout << "Welcome! Type help to see the list of commands!\n";
   std::cin >> command;
-  while (command != "exit")
+  while (true)
   {
-
+    if(command=="exit")
+    {
+      Exit();
+    }
     std::cin >> command;
   }
-  Exit();
+ 
 }
 void CommandInterface::Open(const std::string &filename) 
 {
@@ -41,7 +44,7 @@ void CommandInterface::Open(const std::string &filename)
 
 void CommandInterface::Close()
 {
-    std::cout<<"Are you sure you want to close the file! Your unsaved changes will be lost!\n Type y/n to confirm!";
+    std::cout<<"Are you sure you want to close the file! Your unsaved changes will be lost!\nType y/n to confirm!\n";
     char conf;
     std::cin>>conf;
     if(conf=='n')
@@ -58,6 +61,13 @@ void CommandInterface::Close()
 }
 void CommandInterface::Exit()const
 {
+    std::cout<<"Are you sure you want to exit the program! Your unsaved changes will be lost!\nType y/n to confirm!\n";
+    char conf;
+    std::cin>>conf;
+    if(conf=='n')
+    {
+      return;
+    }
     std::cout<<"Exiting the program!";
     exit(0);
 }
