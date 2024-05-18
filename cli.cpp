@@ -2,6 +2,7 @@
 #include<iostream>
 #include<vector>
 CommandInterface* CommandInterface::interface=nullptr;
+bool CommandInterface::fileIsOpened=0;
 CommandInterface& CommandInterface:: Initialize()
 {
   if(interface!=nullptr)
@@ -11,54 +12,82 @@ CommandInterface& CommandInterface:: Initialize()
   interface= new CommandInterface();
   return *interface;   
 }
-CommandInterface::CommandInterface(){}
-CommandInterface::~CommandInterface()
+void CommandInterface::Run() const
 {
-  std::cout<<"~Interface";
-//     if(streamPtr!=nullptr)
-//     {
-//         delete[]streamPtr;
-//     }
-//     for (Automata* automata:automatas)
-//     {
-//        delete[] automata;
-//     }
-    
-}
-void CommandInterface::Run()const
-{
-    std::string command="";
-    std::cout<<"Welcome! Type help to see the list of commands!\n";
-    std::cin>>command;
-   while (command!="exit")
-   {
-      
-     
-      std::cin>>command; 
-   }
-   Exit();
-   
+  std::string command = "";
+  std::cout << "Welcome! Type help to see the list of commands!\n";
+  std::cin >> command;
+  while (command != "exit")
+  {
+
+    std::cin >> command;
+  }
+  Exit();
 }
 void CommandInterface::Open(const std::string &filename) 
 {
-   openedfile=filename;
+ 
    std::ofstream os;
    os.open(filename);
    if (os.is_open())
    {
      std::cout<<"Successfully opened file "<<filename;
-     streamPtr=&os;
+     openedfile=filename;
+     fileIsOpened=true;
+     os.close();
    }
-   //throw->exep
+   throw "Error! Coudn't open the file "+filename;
 }
 
 void CommandInterface::Close()
 {
-    streamPtr=nullptr;
+    std::cout<<"Are you sure you want to close the file! Your unsaved changes will be lost!\n Type y/n to confirm!";
+    char conf;
+    std::cin>>conf;
+    if(conf=='n')
+    {
+      return;
+    }
+    for (Automata* automata:automatas)
+    {
+      delete[]automata;
+    }
+    automatas.clear();
     openedfile="";
+    fileIsOpened=0;
 }
 void CommandInterface::Exit()const
 {
     std::cout<<"Exiting the program!";
     exit(0);
+}
+
+void CommandInterface::Help() const
+{
+  std::cout<<"The following commands are supported:\n";
+  std::cout<<"open <file> - opens file\n";
+  std::cout<<"close - closes currently opened file\n";
+  std::cout<<"save - saves the opened file\n";
+  std::cout<<"save <id> <filename> - saves the automata in the file with <filename>!\n";
+  std::cout<<"save as <file> - saves the currently opened file in <file>\n";
+  std::cout<<"help - prints this information\n";
+  std::cout<<"exit - exists the program\n";
+  std::cout<<"list - prints the id-s of all read automatas";
+  //TODO::cout the rest of commands
+
+
+}
+
+void CommandInterface::List() const
+{
+  for(Automata* automata:automatas)
+  {
+     automata->Print();
+     std::cout<<'\n';
+  }
+}
+
+void CommandInterface::Serialize()
+{
+  //TODO:Serialize automatas
 }
