@@ -6,7 +6,7 @@
 class CommandInterface{
 
   public:
-  void Run()const;
+  void Run();
   static CommandInterface& Initialize();
 
   CommandInterface(const CommandInterface&)=delete;
@@ -29,6 +29,7 @@ class CommandInterface{
   void Exit()const;
   void Help()const;
   void List()const;
-  void Serialize();
+  void Deserialize(std::fstream&);
+  static const std::string GetCommand(const std::string);
 
 };

@@ -248,7 +248,6 @@ bool Automata:: ContainsStateName(const std::string name)const
   {
     std::ofstream os;
     os.open(filename,std::ios::app);
-    os<<"id "<<id<<'\n';
     os<<edges.size()<<'\n';
     for (DeltaRelation delta:edges)
     {

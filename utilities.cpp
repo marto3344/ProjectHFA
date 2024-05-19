@@ -1,3 +1,5 @@
+#include<iostream>
+#include<cstring>
 #include "utilities.h"
 
 void Utilities::MoveElementsRValue(std::vector<State*>&destination,std::vector<State*>&&source)
@@ -18,4 +20,8 @@ bool Utilities::IsValidStateName(const std::string name)
         }
     }
     return true;
+}
+int Utilities::ConvertChartToInt(const char c)
+{
+    return c-48;
 }
