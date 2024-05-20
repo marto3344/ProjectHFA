@@ -28,8 +28,9 @@ class CommandInterface{
   void Close();
   void Exit()const;
   void Help()const;
+  public:
   void List()const;
-  void Deserialize(std::fstream&);
+  void Deserialize(std::ifstream&);
   static const std::string GetCommand(const std::string);
 
 };

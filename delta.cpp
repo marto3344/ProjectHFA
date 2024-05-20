@@ -1,3 +1,4 @@
+#include<fstream>
 #include "deltaRelation.h"
 
 DeltaRelation:: DeltaRelation(const State &_start, const State &_end, char _label){
@@ -56,4 +57,24 @@ State* DeltaRelation:: getEnd()const
 std::ostream& operator<<(std::ostream& out, const DeltaRelation &delta){
     out<< *delta.getStart()<< " "<<delta.getLabel()<<" "<< *delta.getEnd();
     return out;
+}
+std::ifstream& operator>>(std::ifstream& in, DeltaRelation& relation){
+    if(relation.start!=nullptr)
+    {
+        delete []relation.start;
+    }
+    if(relation.end!=nullptr)
+    {
+        delete[]relation.end;
+    }
+    State* start=new State();
+    State* end=new State();
+    char c;
+    in>>*start;
+    in>>c;
+    in>>*end;
+    relation.start=start;
+    relation.end=end;
+    relation.label=c;
+    return in;
 }

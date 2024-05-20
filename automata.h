@@ -5,6 +5,7 @@
 #include<string>
 class Automata{
     public:
+    Automata()=default;
     Automata(unsigned _id,const std::vector<DeltaRelation>& _edges);
     Automata(const Automata&other);
     Automata(std::string regex);
@@ -23,7 +24,7 @@ class Automata{
     Automata Union(const Automata &other)const;
     Automata Concat(const Automata &other)const;
     Automata Un()const;
-    
+    friend std::ifstream& operator>>(std::ifstream& in, Automata& automata);
 
 
     private:

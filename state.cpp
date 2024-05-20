@@ -1,4 +1,5 @@
 #include<cstring>
+#include<fstream>
 #include"state.h"
 #include"utilities.h"
   State::State(std::string _name,bool _final,bool _initial):stateName(_name),final(_final),initial(_initial){}
@@ -78,3 +79,14 @@
     out<<other.stateName<<" ["<<other.final<<","<<other.initial<<"]";
     return out;
  }
+std::ifstream& operator>>(std::ifstream& in, State& state)
+{
+   std::string stateName;
+   std::string stateValues;
+   in>>stateName;
+   in>>stateValues;
+   state.stateName=stateName;
+   state.final=Utilities::ConvertChartToInt(stateValues[1]);
+   state.initial=Utilities::ConvertChartToInt(stateValues[3]);
+   return in;
+}

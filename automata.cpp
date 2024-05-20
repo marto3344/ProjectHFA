@@ -1,6 +1,6 @@
-#include"automata.h"
 #include<iostream>
 #include<fstream>
+#include"automata.h"
 #include"utilities.h"
 Automata::Automata(unsigned _id,const std::vector<DeltaRelation>& _edges){
   id=_id;
@@ -39,7 +39,7 @@ void Automata::Print() const
 {
     for (DeltaRelation delta : edges)
     {
-        std::cout<<delta;
+        std::cout<<delta<<"\n";
     }
 }
 
@@ -253,6 +253,16 @@ bool Automata:: ContainsStateName(const std::string name)const
     {
         os<<delta<<'\n';
     }
-    
-
+  }
+  std::ifstream& operator>>(std::ifstream& in, Automata& automata)
+  {
+    size_t relationsCount;
+    in>>relationsCount;
+    for (size_t i = 0; i <relationsCount; i++)
+    {
+        DeltaRelation* delta=new DeltaRelation();
+        in>>*delta;
+        automata.edges.push_back(*delta);
+    }
+    return in;
   }

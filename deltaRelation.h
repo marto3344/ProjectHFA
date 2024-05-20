@@ -1,7 +1,7 @@
 #pragma once
-#include"State.h"
 #include<vector>
-
+#include<fstream>
+#include"State.h"
 
 class DeltaRelation
 {
@@ -17,7 +17,7 @@ class DeltaRelation
    
 
    friend std::ostream& operator<<(std::ostream& out, const DeltaRelation &relation);
-
+   friend std::ifstream& operator>>(std::ifstream& in, DeltaRelation& relation);
 
    private:
     State* start;

@@ -48,12 +48,12 @@ void CommandInterface::Open(const std::string &filename)
 {
  
    std::fstream os;
-   os.open(filename, std::ios::app);
+   os.open(filename);
    if (os.is_open())
    {
      try
      {
-      Deserialize(os);
+      //Deserialize(os);
       openedfile=filename;
       fileIsOpened=true;
       std::cout<<"Successfully opened file "<<filename;
@@ -120,38 +120,17 @@ void CommandInterface::List() const
   for(Automata* automata:automatas)
   {
      automata->Print();
-     std::cout<<'\n';
   }
 }
 
-void CommandInterface::Deserialize(std::fstream& os)
+void CommandInterface::Deserialize(std::ifstream& in)
 {
-  os.seekg(std::ios::beg);
-  while (os.eof());
-  {
-
-    size_t deltaCount;
-    os >> deltaCount;
-    std::vector<DeltaRelation> edges;
-    for (size_t i = 0; i < deltaCount; i++)
-    {
-      std::string stateName, stateValues;
-      os >> stateName;
-      os >> stateValues;
-      State start(stateName, Utilities::ConvertChartToInt(stateValues.at(1)), Utilities::ConvertChartToInt(stateValues.at(3)));
-      char label;
-      os >> label;
-      stateName.clear();
-      stateValues.clear();
-      os >> stateName;
-      os >> stateValues;
-      State end(stateName, Utilities::ConvertChartToInt(stateValues.at(1)), Utilities::ConvertChartToInt(stateValues.at(3)));
-      DeltaRelation rel(start, end, label);
-      edges.push_back(rel);
-    }
-    Automata *a = new Automata(automatas.size(), edges);
-    automatas.push_back(a);
-  }
+   while (!in.eof())
+   {
+     Automata* a=new Automata();
+     in>>*a;
+     automatas.push_back(a);
+   }
 }
 
 const std::string CommandInterface::GetCommand(const std::string input)
