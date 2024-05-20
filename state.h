@@ -1,6 +1,6 @@
 #pragma once
 #include<string>
-#include<ostream>
+#include<fstream>
 
 class State{
   public:
@@ -18,6 +18,7 @@ class State{
   void setFinal(bool const value);
   void setInitial(bool const value);
   friend std::ostream& operator<<(std::ostream& out,const State&other);
+  friend std::ifstream& operator>>(std::ifstream& in, State&);
   
   private:
   std::string stateName;
