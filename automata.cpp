@@ -228,12 +228,7 @@ bool Automata:: ContainsStateName(const std::string name)const
  void Automata::draw() const
  {
    std::ofstream out;
-   std::string fileName;
-   fileName="Automata";
-   fileName+=id;
-   fileName+=".dot";
-   std::cout<<fileName;
-   out.open(fileName);
+   out.open("Automata.dot");
    if(out.is_open())
    {
      out<<"digraph Automata_"<<id<<"{\n";
