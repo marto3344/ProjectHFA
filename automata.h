@@ -26,7 +26,7 @@ class Automata{
     Automata Union(const Automata &other)const;
     Automata Concat(const Automata &other)const;
     Automata Un()const;
-    friend std::ifstream& operator>>(std::ifstream& in, Automata& automata);
+    friend std::istream& operator>>(std::istream& in, Automata& automata);
 
 
     private:

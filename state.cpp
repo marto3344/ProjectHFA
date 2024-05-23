@@ -79,7 +79,7 @@
     out<<other.stateName<<" ["<<other.final<<","<<other.initial<<"]";
     return out;
  }
-std::ifstream& operator>>(std::ifstream& in, State& state)
+std::istream& operator>>(std::istream& in, State& state)
 {
    std::string stateName;
    std::string stateValues;

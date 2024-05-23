@@ -18,7 +18,7 @@ class State{
   void setFinal(bool const value);
   void setInitial(bool const value);
   friend std::ostream& operator<<(std::ostream& out,const State&other);
-  friend std::ifstream& operator>>(std::ifstream& in, State&);
+  friend std::istream& operator>>(std::istream& in, State&);
   
   private:
   std::string stateName;

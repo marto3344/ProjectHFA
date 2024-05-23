@@ -138,7 +138,7 @@ void CommandInterface::List() const
 {
   for(Automata* automata:automatas)
   {
-     automata->Print();
+     std::cout<<automata->getId()<<'\n';
   }
 }
 
@@ -155,8 +155,13 @@ void CommandInterface::Deserialize(std::ifstream& in)
 
 void CommandInterface::Draw(unsigned id) const
 {
-  //TODO: validation
+  if(id<0||id>=automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id.\n";
+    return;
+  }
   automatas[id]->draw();
+  std::cout<<"Automata with id: "<<id<<" was drawed successfully. Check Automata.dot file.\n";
 }
 
 const std::string CommandInterface::GetCommand(const std::string input)

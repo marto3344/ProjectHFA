@@ -305,7 +305,7 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     os.close();
   }
-  std::ifstream& operator>>(std::ifstream& in, Automata& automata)
+  std::istream& operator>>(std::istream& in, Automata& automata)
   {
     size_t relationsCount;
     in>>relationsCount;

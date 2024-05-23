@@ -17,7 +17,7 @@ class DeltaRelation
    
 
    friend std::ostream& operator<<(std::ostream& out, const DeltaRelation &relation);
-   friend std::ifstream& operator>>(std::ifstream& in, DeltaRelation& relation);
+   friend std::istream& operator>>(std::istream& in, DeltaRelation& relation);
 
    private:
     State* start;

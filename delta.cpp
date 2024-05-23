@@ -58,7 +58,7 @@ std::ostream& operator<<(std::ostream& out, const DeltaRelation &delta){
     out<< *delta.getStart()<< " "<<delta.getLabel()<<" "<< *delta.getEnd();
     return out;
 }
-std::ifstream& operator>>(std::ifstream& in, DeltaRelation& relation){
+std::istream& operator>>(std::istream& in, DeltaRelation& relation){
     if(relation.start!=nullptr)
     {
         delete []relation.start;
