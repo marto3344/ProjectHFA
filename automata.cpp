@@ -225,24 +225,79 @@ bool Automata:: ContainsStateName(const std::string name)const
    return result;
  }
 
-  bool Automata:: Recognize(std::string word)
-  {
-    std::vector<State*>currStates;
-    //currStates=TraversalWithChar(getInitialStates(),word[0]);
-    Utilities::MoveElementsRValue(currStates,TraversalWithChar(getInitialStates(),word[0]));
-    for (size_t i = 1; i < word.size(); i++)
-    {
-        if(currStates.empty())return false;
-        Utilities::MoveElementsRValue(currStates,TraversalWithChar(currStates,word[i]));
-    }
-    for (State* state:currStates)
-    {
-        if(state->isFinal())
+ void Automata::draw() const
+ {
+   std::ofstream out;
+   std::string fileName;
+   fileName="Automata";
+   fileName+=id;
+   fileName+=".dot";
+   std::cout<<fileName;
+   out.open(fileName);
+   if(out.is_open())
+   {
+     out<<"digraph Automata_"<<id<<"{\n";
+     for (size_t i = 0; i < edges.size(); i++)
+     {
+        if(edges[i].getStart()->isInitial())
         {
-            return true;
+           out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
+           out<<" hiddenNode->"<<edges[i].getStart()->getStateName()<<"[arrowtail=none]"<<"\n";
         }
-    } 
-    return false;
+        if(edges[i].getEnd()->isInitial())
+        {
+           
+           out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
+           out<<" hiddenNode->"<<edges[i].getEnd()->getStateName()<<"[arrowtail=none]"<<"\n";
+        }
+        if(edges[i].getStart()->isFinal())
+        {
+           out<<" "<<edges[i].getStart()->getStateName()<<"[shape=doublecircle]\n";
+        }
+        else{
+            out<<" "<<edges[i].getStart()->getStateName()<<"[shape=circle]\n";
+        }
+        if(edges[i].getEnd()->isFinal())
+        {
+           out<<" "<<edges[i].getEnd()->getStateName()<<"[shape=doublecircle]\n";
+        }
+        else{
+            out<<" "<<edges[i].getEnd()->getStateName()<<"[shape=circle]\n";
+        }
+        out<<" "<<edges[i].getStart()->getStateName();
+        out<<"->"<<edges[i].getEnd()->getStateName();
+        out<<"[label=\""<<edges[i].getLabel()<<"\"]"<<"\n" ;  
+     }
+     out<<"}";
+     out.close();
+   }
+   else throw "coudn't draw the automata";
+   
+ }
+
+ void Automata::setId(unsigned _id)
+ {
+    id=_id;
+ }
+
+ bool Automata::Recognize(std::string word)
+ {
+     std::vector<State *> currStates;
+     Utilities::MoveElementsRValue(currStates, TraversalWithChar(getInitialStates(), word[0]));
+     for (size_t i = 1; i < word.size(); i++)
+     {
+         if (currStates.empty())
+             return false;
+         Utilities::MoveElementsRValue(currStates, TraversalWithChar(currStates, word[i]));
+     }
+     for (State *state : currStates)
+     {
+         if (state->isFinal())
+         {
+             return true;
+         }
+     }
+     return false;
   }
   void Automata:: Save(std::string filename)const
   {
@@ -253,6 +308,7 @@ bool Automata:: ContainsStateName(const std::string name)const
     {
         os<<delta<<'\n';
     }
+    os.close();
   }
   std::ifstream& operator>>(std::ifstream& in, Automata& automata)
   {

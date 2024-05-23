@@ -20,6 +20,8 @@ class Automata{
     bool Empty();
     bool Finite();
     bool Deterministic()const;
+    void draw()const;
+    void setId(unsigned);
     bool Recognize(std::string word);
     Automata Union(const Automata &other)const;
     Automata Concat(const Automata &other)const;

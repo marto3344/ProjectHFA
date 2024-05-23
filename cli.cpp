@@ -148,8 +148,15 @@ void CommandInterface::Deserialize(std::ifstream& in)
    {
      Automata* a=new Automata();
      in>>*a;
+     a->setId(automatas.size());
      automatas.push_back(a);
    }
+}
+
+void CommandInterface::Draw(unsigned id) const
+{
+  //TODO: validation
+  automatas[id]->draw();
 }
 
 const std::string CommandInterface::GetCommand(const std::string input)
