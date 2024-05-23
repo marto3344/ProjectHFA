@@ -22,12 +22,14 @@ class CommandInterface{
   std::string openedfile;
   
   CommandInterface()=default;
-  ~CommandInterface()=default;
+  ~CommandInterface();
 
   void Open(const std::string&);
   void Close();
   void Exit()const;
   void Help()const;
+  void cleanMemory();
+  
   public:
   void List()const;
   void Deserialize(std::ifstream&);

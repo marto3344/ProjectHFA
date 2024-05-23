@@ -2,10 +2,15 @@
 #include<vector>
 #include<fstream>
 #include<exception>
+#include<string>
 #include"CLI.h"
 #include"utilities.h"
 CommandInterface* CommandInterface::interface=nullptr;
 bool CommandInterface::fileIsOpened=0;
+CommandInterface::~CommandInterface()
+{
+  cleanMemory();
+}
 CommandInterface& CommandInterface:: Initialize()
 {
   if(interface!=nullptr)
@@ -26,6 +31,13 @@ void CommandInterface::Run()
     {
       Exit();
     }
+    else if(inputStr=="close")
+    {
+      if(fileIsOpened)
+      {
+       Close();
+      }
+    }
     else if(inputStr=="help")
     {
       Help();
@@ -33,40 +45,42 @@ void CommandInterface::Run()
     else if(GetCommand(inputStr)=="open")
     {
        std::string filename;
-       for (size_t i = 5; i < inputStr.size(); i++)
-       {
-         filename+=inputStr[i];
-       }
-         Open(filename);
+      for (size_t i = 5; i < inputStr.size(); i++)
+      {
+          filename+=inputStr[i];
+      }
+      try
+      {
+        Open(filename);
+      }
+      catch(const std::string str)
+      {
+        std::cout<<str;
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
     }
    inputStr.clear();
    std::getline(std::cin,inputStr);
   }
  
 }
-void CommandInterface::Open(const std::string &filename) 
+
+void CommandInterface::Open(const std::string &filename)
 {
- 
-   std::fstream os;
-   os.open(filename);
-   if (os.is_open())
-   {
-     try
-     {
-      //Deserialize(os);
-      openedfile=filename;
-      fileIsOpened=true;
-      std::cout<<"Successfully opened file "<<filename;
-      os.close();
-     }
-     catch(const std::exception& e)
-     {
-      std::cerr << e.what() << '\n';
-     }
-     
-     
-   }
-   throw "Error! Coudn't open the file "+filename;
+        std::ifstream in;
+        in.open(filename);
+        if (in.is_open())
+        {
+          Deserialize(in);
+          openedfile = filename;
+          fileIsOpened = true;
+          std::cout<<"Successfully opened "<<filename<<'\n';
+        }
+        else throw "coudn't open the file";
 }
 
 void CommandInterface::Close()
@@ -78,10 +92,7 @@ void CommandInterface::Close()
     {
       return;
     }
-    for (Automata* automata:automatas)
-    {
-      delete[]automata;
-    }
+    
     automatas.clear();
     openedfile="";
     fileIsOpened=0;
@@ -113,6 +124,14 @@ void CommandInterface::Help() const
   //TODO::cout the rest of commands
   
 
+}
+
+void CommandInterface::cleanMemory()
+{
+  for (Automata *automata : automatas)
+  {
+    delete[] automata;
+  }
 }
 
 void CommandInterface::List() const
