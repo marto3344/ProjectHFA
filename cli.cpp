@@ -71,8 +71,8 @@ void CommandInterface::Run()
 
 void CommandInterface::Open(const std::string &filename)
 {
-        std::ifstream in;
-        in.open(filename);
+        std::fstream in;
+        in.open(filename,std::ios::in);
         if (in.is_open())
         {
           Deserialize(in);
@@ -138,11 +138,12 @@ void CommandInterface::List() const
 {
   for(Automata* automata:automatas)
   {
-     std::cout<<automata->getId()<<'\n';
+     //std::cout<<automata->getId()<<'\n';
+     automata->Print();
   }
 }
 
-void CommandInterface::Deserialize(std::ifstream& in)
+void CommandInterface::Deserialize(std::istream& in)
 {
    while (!in.eof())
    {

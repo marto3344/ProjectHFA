@@ -168,7 +168,7 @@ bool Automata:: ContainsStateName(const std::string name)const
  {
 
  }
- std::vector<State*>Automata::getInitialStates()
+ const std::vector<State*>Automata::getInitialStates() const
  {
     std::vector<State*>result;
     for (State* state:states)
@@ -182,7 +182,7 @@ bool Automata:: ContainsStateName(const std::string name)const
     return result;
     std::cout<<"End of Initial";
  }
- std::vector<State*>Automata::getFinalStates()
+ const std::vector<State*>Automata::getFinalStates()const
  {
     std::vector<State*>result;
     for (State* state:states)
@@ -317,3 +317,42 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     return in;
   }
+bool Automata::Deterministic()const
+{
+    if(getInitialStates().size()>1)
+    {
+        return false;
+    }
+    const size_t alphabet_size=36;
+    bool alphabet[alphabet_size]={0,};
+    for (State* state:states)
+    {
+        for (DeltaRelation delta:edges)
+        {
+            if (state->getStateName() == delta.getStart()->getStateName())
+            {
+                if (delta.getLabel() >= 48 && delta.getLabel() <= 57) // if the char is digit
+                {
+                    if (alphabet[delta.getLabel()-48])
+                    {
+                        return false;
+                    }
+                    alphabet[delta.getLabel()-48] = true;
+                }
+                if(delta.getLabel()>=97&&delta.getLabel()<=122)//if the char is small letter
+                {
+                    if(alphabet[delta.getLabel()-87])
+                    {
+                        return false;
+                    }
+                    alphabet[delta.getLabel()-87]=true;
+
+                }
+            }
+        }
+        
+    }
+    return true;
+   
+
+}

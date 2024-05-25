@@ -38,9 +38,9 @@ class Automata{
     void RemoveEpsilons();
     std::vector<State*> EpsiloneClosure(const State &other);
    
-    std::vector<State*>getFinalStates();
+    const std::vector<State*>getFinalStates()const;
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
-    std::vector<State*>getInitialStates();
+    const std::vector<State*>getInitialStates() const;
     public:
     Automata getUniqueStates(const Automata&other)const;
     
