@@ -2,7 +2,7 @@
 #include<fstream>
 #include"state.h"
 #include"utilities.h"
-  State::State(std::string _name,bool _final,bool _initial):stateName(_name),final(_final),initial(_initial){}
+  State::State(const std::string &_name,bool _final,bool _initial):stateName(_name),final(_final),initial(_initial){}
   State::State()
   {
     stateName=" ";
@@ -33,11 +33,15 @@
     return *this;
     
   }
-  const std::string State::getStateName() const
+  bool State::operator==(const State &other) const
+  {
+      return stateName==other.stateName&&initial==other.initial&&final==other.final;
+  }
+  const std::string &State::getStateName() const
   {
     return stateName;
   }
-  void State::setStateName(const std::string name)
+  void State::setStateName(const std::string &name)
   {
     if(!Utilities::IsValidStateName(name))
     {

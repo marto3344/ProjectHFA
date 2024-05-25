@@ -7,6 +7,7 @@
 #include"utilities.h"
 CommandInterface* CommandInterface::interface=nullptr;
 bool CommandInterface::fileIsOpened=0;
+std::string CommandInterface::NoOpenedFileMessage="Error! There is no file opened\n";
 CommandInterface::~CommandInterface()
 {
   cleanMemory();
@@ -37,6 +38,10 @@ void CommandInterface::Run()
       {
        Close();
       }
+      else
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
     }
     else if(inputStr=="help")
     {
@@ -62,6 +67,34 @@ void CommandInterface::Run()
         std::cerr << e.what() << '\n';
       }
       
+    }
+    else if(GetCommand(inputStr)=="recognize")
+    {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+        break;
+      }
+
+    }
+    else if(GetCommand(inputStr)=="deterministic")
+    {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+        break;
+      }
+      std::string automataId;
+      for (size_t i = 14; i < inputStr.size(); i++)
+      {
+        automataId+=inputStr[i];
+      }
+      std::cout<<automataId<<'\n';
+      std::cout<<std::boolalpha<<automatas[std::stoi(automataId)]->Deterministic()<<'\n';
+    }
+    else if(inputStr=="list")
+    {
+      List();
     }
    inputStr.clear();
    std::getline(std::cin,inputStr);

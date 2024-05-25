@@ -164,6 +164,16 @@ bool Automata:: ContainsStateName(const std::string name)const
 
 
  }
+ const std::vector<State *> Automata::FindConnectedStated(const State &start) const
+ {
+    std::vector<State*> result;
+    for (DeltaRelation delta:edges)
+    {
+        /* code */
+    }
+    
+     return result;
+ }
  void Automata::RemoveEpsilons()
  {
 
@@ -215,7 +225,7 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
      for (size_t j = 0; j < edges.size(); j++)
      {
-        if (currStates[i]->getStateName()==edges[j].getStart()->getStateName()&&edges[j].getLabel()==c)
+        if (*currStates[i]==*edges[j].getStart()&&edges[j].getLabel()==c)
         {
             result.push_back(edges[j].getEnd());
         }       
@@ -315,6 +325,7 @@ bool Automata:: ContainsStateName(const std::string name)const
         in>>*delta;
         automata.edges.push_back(*delta);
     }
+    automata.CalculateStates();
     return in;
   }
 bool Automata::Deterministic()const
@@ -329,7 +340,7 @@ bool Automata::Deterministic()const
     {
         for (DeltaRelation delta:edges)
         {
-            if (state->getStateName() == delta.getStart()->getStateName())
+            if (*state == *delta.getStart())
             {
                 if (delta.getLabel() >= 48 && delta.getLabel() <= 57) // if the char is digit
                 {

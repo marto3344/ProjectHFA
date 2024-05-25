@@ -37,7 +37,7 @@ class Automata{
     bool ContainsStateName(const std::string)const;
     void RemoveEpsilons();
     std::vector<State*> EpsiloneClosure(const State &other);
-   
+    const std::vector<State*>FindConnectedStated(const State& start)const;
     const std::vector<State*>getFinalStates()const;
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     const std::vector<State*>getInitialStates() const;

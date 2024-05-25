@@ -20,7 +20,7 @@ class CommandInterface{
   static bool fileIsOpened;
   std::vector<Automata*>automatas;
   std::string openedfile;
-  
+  static std::string NoOpenedFileMessage;
   CommandInterface()=default;
   ~CommandInterface();
 
@@ -28,12 +28,10 @@ class CommandInterface{
   void Close();
   void Exit()const;
   void Help()const;
-  void cleanMemory();
-  
-  public:
   void List()const;
   void Deserialize(std::istream&);
   void Draw(unsigned)const;
   static const std::string GetCommand(const std::string);
+  void cleanMemory();
 
 };
