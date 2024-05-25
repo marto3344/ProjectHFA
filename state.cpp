@@ -90,7 +90,7 @@ std::istream& operator>>(std::istream& in, State& state)
    in>>stateName;
    in>>stateValues;
    state.stateName=stateName;
-   state.final=Utilities::ConvertChartToInt(stateValues[1]);
-   state.initial=Utilities::ConvertChartToInt(stateValues[3]);
+   state.final=stateValues[1]-'0';
+   state.initial=stateValues[3]-'0';
    return in;
 }

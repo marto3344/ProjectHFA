@@ -21,7 +21,3 @@ bool Utilities::IsValidStateName(const std::string name)
     }
     return true;
 }
-int Utilities::ConvertChartToInt(const char c)
-{
-    return c-48;
-}

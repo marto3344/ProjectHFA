@@ -29,6 +29,7 @@ class CommandInterface{
   void Exit()const;
   void Help()const;
   void List()const;
+  public:
   void Deserialize(std::istream&);
   void Draw(unsigned)const;
   static const std::string GetCommand(const std::string);

@@ -2,29 +2,29 @@
 #include<fstream>
 #include"automata.h"
 #include"utilities.h"
-Automata::Automata(unsigned _id,const std::vector<DeltaRelation>& _edges){
+Automata::Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges){
   id=_id;
-  edges=_edges;
+  for (size_t i = 0; i < _edges.size(); i++)
+  {
+    edges.push_back(new DeltaRelation(*_edges[i]));
+  }
+  
   CalculateStates();
 
 };
 Automata::Automata(const Automata &other)
 {
     id=other.id;
-    edges=other.edges;
+    for (size_t i = 0; i < other.edges.size(); i++)
+    {
+        edges.push_back(new DeltaRelation(*other.edges[i]));
+    }
+    
     CalculateStates();
 }
 Automata::~Automata()
 {
-    // //std::cout<<"~Automata";
-    // for (State* state:states)
-    // {
-    //     if(state!=nullptr)
-    //     {
-    //         delete[]state;
-    //     }
-    // }
-    
+  freeMemory();  
 }
 unsigned Automata::getId() const
 {
@@ -37,23 +37,23 @@ const std::vector<State*> Automata:: getStates()
 }
 void Automata::Print() const
 {
-    for (DeltaRelation delta : edges)
+    for (DeltaRelation* delta : edges)
     {
-        std::cout<<delta<<"\n";
+        std::cout<<*delta<<"\n";
     }
 }
 
  Automata Automata:: getUniqueStates(const Automata&other)const
  {  
-    std::vector<DeltaRelation>resultEdges=std::vector<DeltaRelation>(edges.size()+other.edges.size());
+    std::vector<DeltaRelation*>resultEdges=std::vector<DeltaRelation*>(edges.size()+other.edges.size());
     for (size_t i = 0; i < edges.size(); i++)
     {
-       resultEdges[i]=edges[i];
+       resultEdges[i]=new DeltaRelation (*edges[i]);
     }
     for (size_t i = 0; i < other.edges.size(); i++)
     {
-        std::string resultStart="{"+other.edges[i].getStart()->getStateName()+"}";
-        std::string resultEnd="{"+other.edges[i].getEnd()->getStateName()+"}";
+        std::string resultStart="{"+other.edges[i]->getStart()->getStateName()+"}";
+        std::string resultEnd="{"+other.edges[i]->getEnd()->getStateName()+"}";
         while (other.ContainsStateName(resultStart)||this->ContainsStateName(resultStart))
         {
             resultStart="{"+resultStart+"}";
@@ -62,33 +62,42 @@ void Automata::Print() const
         {
             resultEnd="{"+resultEnd+"}";
         }
-        State * resultStartState=new State(*other.edges[i].getStart());
+        State * resultStartState=new State(*other.edges[i]->getStart());
         resultStartState->setStateName(resultStart);
-        State* resultEndState=new State(*other.edges[i].getEnd());
+        State* resultEndState=new State(*other.edges[i]->getEnd());
         resultEndState->setStateName(resultEnd);
-        resultEdges[edges.size()+i]=DeltaRelation(*resultStartState,*resultEndState,other.edges[i].getLabel());    
+        resultEdges[edges.size()+i]=new DeltaRelation(*resultStartState,*resultEndState,other.edges[i]->getLabel());    
     }
    
-    Automata result(0,resultEdges);
+    Automata result;
+    result.id=0;
+    result.edges=std::move(resultEdges);
     result.CalculateStates();
     return result;
  }
-void Automata:: CalculateStates(){
-
-    for (DeltaRelation delta:edges)
+ void Automata::freeMemory()
+ {
+    for (DeltaRelation* delta:edges)
     {
-        if (!ContainsStateName(delta.getStart()->getStateName()))
-        {
-            states.push_back(delta.getStart());
-        }
-        if (!ContainsStateName(delta.getEnd()->getStateName()))
-        {
-            states.push_back(delta.getEnd());
-        }
-        
+        delete delta;
     }
     
-};
+ }
+ void Automata::CalculateStates()
+ {
+
+     for (DeltaRelation* delta : edges)
+     {
+         if (!ContainsStateName(delta->getStart()->getStateName()))
+         {
+             states.push_back(delta->getStart());
+         }
+         if (!ContainsStateName(delta->getEnd()->getStateName()))
+         {
+             states.push_back(delta->getEnd());
+         }
+     }
+ };
 
 bool Automata:: ContainsStateName(const std::string name)const
 {
@@ -119,7 +128,7 @@ bool Automata:: ContainsStateName(const std::string name)const
             {
                 if (other.states[j]->isInitial())
                 {
-                    result.edges.push_back(DeltaRelation(*result.states[i],*other.states[j],'~'));
+                    result.edges.push_back(new DeltaRelation(*result.states[i],*other.states[j],'~'));
                     other.states[j]->setInitial(false);
                 }                
             }           
@@ -139,7 +148,7 @@ bool Automata:: ContainsStateName(const std::string name)const
            {
               if (result.states[j]->isInitial())
               {
-                result.edges.push_back(DeltaRelation(*result.states[i],*result.states[j],'~'));
+                result.edges.push_back(new DeltaRelation(*result.states[i],*result.states[j],'~'));
               }
               
            }
@@ -149,39 +158,20 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     return result;   
  }
- std::vector<State*> Automata::EpsiloneClosure(const State&other)
- {
-    std::vector<State*>resultStates;
-    for (DeltaRelation delta:edges)
-    {
-       if (delta.getStart()==&other &&delta.getLabel()=='~')
-       {
-          resultStates.push_back(delta.getEnd());
-       }
-          
-    }
-    return resultStates;
-
-
- }
  const std::vector<State *> Automata::FindConnectedStated(const State &start) const
  {
     std::vector<State*> result;
-    for (DeltaRelation delta:edges)
+    for (DeltaRelation* delta:edges)
     {
-        if (start==*delta.getStart())
+        if (start==*delta->getStart())
         {
-            result.push_back(delta.getEnd());
+            result.push_back(delta->getEnd());
         }
         
     }
      return result;
  }
 
- void Automata::RemoveEpsilons()
- {
-
- }
  const std::vector<State*>Automata::getInitialStates() const
  {
     std::vector<State*>result;
@@ -242,9 +232,9 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
      for (size_t j = 0; j < edges.size(); j++)
      {
-        if (*currStates[i]==*edges[j].getStart()&&edges[j].getLabel()==c)
+        if (*currStates[i]==*edges[j]->getStart()&&edges[j]->getLabel()==c)
         {
-            result.push_back(edges[j].getEnd());
+            result.push_back(edges[j]->getEnd());
         }       
      }
      
@@ -262,12 +252,12 @@ bool Automata:: ContainsStateName(const std::string name)const
         }
         else return false;
     }
-    for (DeltaRelation delta:edges)
+    for (DeltaRelation* delta:edges)
     {
-        if (start==*delta.getStart()&&!ContainsState(start,visitedStates))
+        if (start==*delta->getStart()&&!ContainsState(start,visitedStates))
         {
-            visitedStates.push_back(delta.getEnd());
-            return FindPaths(*delta.getEnd(),visitedStates);
+            visitedStates.push_back(delta->getEnd());
+            return FindPaths(*delta->getEnd(),visitedStates);
         }
         
     }
@@ -300,34 +290,34 @@ bool Automata:: ContainsStateName(const std::string name)const
      out<<"digraph Automata_"<<id<<"{\n";
      for (size_t i = 0; i < edges.size(); i++)
      {
-        if(edges[i].getStart()->isInitial())
+        if(edges[i]->getStart()->isInitial())
         {
            out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
-           out<<" hiddenNode->"<<edges[i].getStart()->getStateName()<<"[arrowtail=none]"<<"\n";
+           out<<" hiddenNode->"<<edges[i]->getStart()->getStateName()<<"[arrowtail=none]"<<"\n";
         }
-        if(edges[i].getEnd()->isInitial())
+        if(edges[i]->getEnd()->isInitial())
         {
            
            out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
-           out<<" hiddenNode->"<<edges[i].getEnd()->getStateName()<<"[arrowtail=none]"<<"\n";
+           out<<" hiddenNode->"<<edges[i]->getEnd()->getStateName()<<"[arrowtail=none]"<<"\n";
         }
-        if(edges[i].getStart()->isFinal())
+        if(edges[i]->getStart()->isFinal())
         {
-           out<<" "<<edges[i].getStart()->getStateName()<<"[shape=doublecircle]\n";
+           out<<" "<<edges[i]->getStart()->getStateName()<<"[shape=doublecircle]\n";
         }
         else{
-            out<<" "<<edges[i].getStart()->getStateName()<<"[shape=circle]\n";
+            out<<" "<<edges[i]->getStart()->getStateName()<<"[shape=circle]\n";
         }
-        if(edges[i].getEnd()->isFinal())
+        if(edges[i]->getEnd()->isFinal())
         {
-           out<<" "<<edges[i].getEnd()->getStateName()<<"[shape=doublecircle]\n";
+           out<<" "<<edges[i]->getEnd()->getStateName()<<"[shape=doublecircle]\n";
         }
         else{
-            out<<" "<<edges[i].getEnd()->getStateName()<<"[shape=circle]\n";
+            out<<" "<<edges[i]->getEnd()->getStateName()<<"[shape=circle]\n";
         }
-        out<<" "<<edges[i].getStart()->getStateName();
-        out<<"->"<<edges[i].getEnd()->getStateName();
-        out<<"[label=\""<<edges[i].getLabel()<<"\"]"<<"\n" ;  
+        out<<" "<<edges[i]->getStart()->getStateName();
+        out<<"->"<<edges[i]->getEnd()->getStateName();
+        out<<"[label=\""<<edges[i]->getLabel()<<"\"]"<<"\n" ;  
      }
      out<<"}";
      out.close();
@@ -365,9 +355,9 @@ bool Automata:: ContainsStateName(const std::string name)const
     std::ofstream os;
     os.open(filename,std::ios::app);
     os<<edges.size()<<'\n';
-    for (DeltaRelation delta:edges)
+    for (DeltaRelation* delta:edges)
     {
-        os<<delta<<'\n';
+        os<<*delta<<'\n';
     }
     os.close();
   }
@@ -379,7 +369,7 @@ bool Automata:: ContainsStateName(const std::string name)const
     {
         DeltaRelation* delta=new DeltaRelation();
         in>>*delta;
-        automata.edges.push_back(*delta);
+        automata.edges.push_back(delta);
     }
     automata.CalculateStates();
     return in;
@@ -394,25 +384,25 @@ bool Automata::Deterministic()const
     bool alphabet[alphabet_size]={0,};
     for (State* state:states)
     {
-        for (DeltaRelation delta:edges)
+        for (DeltaRelation* delta:edges)
         {
-            if (*state == *delta.getStart())
+            if (*state == *delta->getStart())
             {
-                if (delta.getLabel() >= 48 && delta.getLabel() <= 57) // if the char is digit
+                if (delta->getLabel() >= 48 && delta->getLabel() <= 57) // if the char is digit
                 {
-                    if (alphabet[delta.getLabel()-48])
+                    if (alphabet[delta->getLabel()-48])
                     {
                         return false;
                     }
-                    alphabet[delta.getLabel()-48] = true;
+                    alphabet[delta->getLabel()-48] = true;
                 }
-                if(delta.getLabel()>=97&&delta.getLabel()<=122)//if the char is small letter
+                if(delta->getLabel()>=97&&delta->getLabel()<=122)//if the char is small letter
                 {
-                    if(alphabet[delta.getLabel()-87])
+                    if(alphabet[delta->getLabel()-87])
                     {
                         return false;
                     }
-                    alphabet[delta.getLabel()-87]=true;
+                    alphabet[delta->getLabel()-87]=true;
 
                 }
             }

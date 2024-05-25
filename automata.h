@@ -6,7 +6,7 @@
 class Automata{
     public:
     Automata()=default;
-    Automata(unsigned _id,const std::vector<DeltaRelation>& _edges);
+    Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges);
     Automata(const Automata&other);
     Automata(std::string regex);
     ~Automata();
@@ -32,11 +32,9 @@ class Automata{
     private:
     unsigned int id;
     std::vector<State*>states;
-    std::vector<DeltaRelation>edges;
+    std::vector<DeltaRelation*>edges;
     void CalculateStates();
     bool ContainsStateName(const std::string)const;
-    void RemoveEpsilons();
-    std::vector<State*> EpsiloneClosure(const State &other);
     const std::vector<State*>FindConnectedStated(const State& start)const;
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
@@ -45,5 +43,6 @@ class Automata{
     const std::vector<State*>getInitialStates() const;
     bool ConnectedStatesAreVisited(const State& start,const std::vector<State*>&visited)const;
     Automata getUniqueStates(const Automata&other)const;
+    void freeMemory();
     
 };
