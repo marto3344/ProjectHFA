@@ -17,7 +17,7 @@ class Automata{
 
     void Print() const;
     void Save(std::string filename)const;
-    bool Empty();
+    bool Empty() const;
     bool Finite();
     bool Deterministic()const;
     void draw()const;
@@ -38,10 +38,12 @@ class Automata{
     void RemoveEpsilons();
     std::vector<State*> EpsiloneClosure(const State &other);
     const std::vector<State*>FindConnectedStated(const State& start)const;
-    const std::vector<State*>getFinalStates()const;
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
+    bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
+    bool static ContainsState(const State& state,const std::vector<State*>&vec);
+    const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
-    public:
+    bool ConnectedStatesAreVisited(const State& start,const std::vector<State*>&visited)const;
     Automata getUniqueStates(const Automata&other)const;
     
 };

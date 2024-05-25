@@ -89,8 +89,21 @@ void CommandInterface::Run()
       {
         automataId+=inputStr[i];
       }
-      std::cout<<automataId<<'\n';
       std::cout<<std::boolalpha<<automatas[std::stoi(automataId)]->Deterministic()<<'\n';
+    }
+    else if(GetCommand(inputStr)=="empty")
+    {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+        break;
+      }
+      std::string automataId;
+      for (size_t i = 5; i < inputStr.size(); i++)
+      {
+        automataId+=inputStr[i];
+      }
+      std::cout<<std::boolalpha<<automatas[std::stoi(automataId)]->Empty()<<'\n';
     }
     else if(inputStr=="list")
     {

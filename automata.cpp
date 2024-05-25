@@ -169,11 +169,15 @@ bool Automata:: ContainsStateName(const std::string name)const
     std::vector<State*> result;
     for (DeltaRelation delta:edges)
     {
-        /* code */
+        if (start==*delta.getStart())
+        {
+            result.push_back(delta.getEnd());
+        }
+        
     }
-    
      return result;
  }
+
  void Automata::RemoveEpsilons()
  {
 
@@ -192,7 +196,8 @@ bool Automata:: ContainsStateName(const std::string name)const
     return result;
     std::cout<<"End of Initial";
  }
- const std::vector<State*>Automata::getFinalStates()const
+
+ const std::vector<State *> Automata::getFinalStates() const
  {
     std::vector<State*>result;
     for (State* state:states)
@@ -207,13 +212,25 @@ bool Automata:: ContainsStateName(const std::string name)const
 
  }
 
- bool Automata:: Empty()
+ bool Automata:: Empty()const
  {
    if(getFinalStates().empty()|| getInitialStates().empty())
    {
       return true;
    }
-   //TODO DFS 
+   std::vector<State*>visited;
+   const std::vector<State*>initialStates=getInitialStates();
+   for (State* state:initialStates)
+   {
+     if (FindPaths(*state,visited))
+     {
+        return true;
+     }
+     
+   }
+   
+     
+   
    return false;
  }
 
@@ -233,6 +250,45 @@ bool Automata:: ContainsStateName(const std::string name)const
      
    }
    return result;
+ }
+
+ bool Automata::FindPaths(const State &start,  std::vector<State *> &visitedStates) const
+ {
+    if (FindConnectedStated(start).empty()||ConnectedStatesAreVisited(start,visitedStates))
+    {
+        if(start.isFinal())
+        {
+            return true;
+        }
+        else return false;
+    }
+    for (DeltaRelation delta:edges)
+    {
+        if (start==*delta.getStart()&&!ContainsState(start,visitedStates))
+        {
+            visitedStates.push_back(delta.getEnd());
+            return FindPaths(*delta.getEnd(),visitedStates);
+        }
+        
+    }
+    if(start.isFinal())
+    {
+     return true;
+    }
+    return false;
+ }
+
+ bool Automata::ContainsState(const State &state, const std::vector<State *> &vec)
+ {
+    for (State* vecState:vec)
+    {
+        if (state==*vecState)
+        {
+            return true;
+        }
+    }
+    
+     return false;
  }
 
  void Automata::draw() const
@@ -364,6 +420,15 @@ bool Automata::Deterministic()const
         
     }
     return true;
-   
-
 }
+ bool Automata::ConnectedStatesAreVisited(const State&start,const std::vector<State*>&visited)const
+ {
+     for (State* state:FindConnectedStated(start))
+     {
+        if (!ContainsState(*state,visited))
+        {
+            return false;
+        }       
+     }   
+     return true;
+ }
