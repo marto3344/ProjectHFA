@@ -214,7 +214,7 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
      if (FindPaths(*state,visited))
      {
-        return true;
+        return false;
      }
      
    } 
@@ -258,11 +258,7 @@ bool Automata:: ContainsStateName(const std::string name)const
         }
         
     }
-    if(start.isFinal())
-    {
-     return true;
-    }
-    return false;
+  return true;
  }
 
  bool Automata::ContainsState(const State &state, const std::vector<State *> &vec)
@@ -352,11 +348,10 @@ bool Automata:: ContainsStateName(const std::string name)const
     std::ofstream os;
     os.open(filename,std::ios::app);
     os<<edges.size()<<'\n';
-    for (size_t i=0;i<edges.size()-1;++i)
+    for (size_t i=0;i<edges.size();++i)
     {
         os<<*edges[i]<<'\n';
     }
-    os<<*edges[edges.size()-1];
     os.close();
   }
   std::istream& operator>>(std::istream& in, Automata& automata)
