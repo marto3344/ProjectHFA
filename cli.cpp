@@ -125,6 +125,7 @@ void CommandInterface::Open(const std::string &filename)
           openedfile = filename;
           fileIsOpened = true;
           std::cout<<"Successfully opened "<<filename<<'\n';
+          in.close();
         }
         else throw "coudn't open the file";
 }
@@ -138,12 +139,12 @@ void CommandInterface::Close()
     {
       return;
     }
-    
+    //cleanMemory();
     automatas.clear();
     openedfile="";
     fileIsOpened=0;
 }
-void CommandInterface::Exit()const
+void CommandInterface::Exit()
 {
     std::cout<<"Are you sure you want to exit the program? Your unsaved changes will be lost!\nType y/n to confirm!\n";
     char conf;
@@ -152,6 +153,7 @@ void CommandInterface::Exit()const
     {
       return;
     }
+    //cleanMemory();
     std::cout<<"Exiting the program!";
     exit(0);
 }
@@ -176,7 +178,7 @@ void CommandInterface::cleanMemory()
 {
   for (Automata *automata : automatas)
   {
-    delete[] automata;
+    delete automata;
   }
 }
 
@@ -191,7 +193,7 @@ void CommandInterface::List() const
 
 void CommandInterface::Deserialize(std::istream& in)
 {
-   while (!in.eof())
+  while (!in.eof())
    {
      Automata* a=new Automata();
      in>>*a;

@@ -26,7 +26,7 @@ class CommandInterface{
 
   void Open(const std::string&);
   void Close();
-  void Exit()const;
+  void Exit();
   void Help()const;
   void List()const;
   public:

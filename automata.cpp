@@ -352,10 +352,11 @@ bool Automata:: ContainsStateName(const std::string name)const
     std::ofstream os;
     os.open(filename,std::ios::app);
     os<<edges.size()<<'\n';
-    for (DeltaRelation* delta:edges)
+    for (size_t i=0;i<edges.size()-1;++i)
     {
-        os<<*delta<<'\n';
+        os<<*edges[i]<<'\n';
     }
+    os<<*edges[edges.size()-1];
     os.close();
   }
   std::istream& operator>>(std::istream& in, Automata& automata)
