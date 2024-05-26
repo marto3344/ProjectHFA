@@ -217,11 +217,8 @@ bool Automata:: ContainsStateName(const std::string name)const
         return true;
      }
      
-   }
-   
-     
-   
-   return false;
+   } 
+   return true;
  }
 
 
@@ -381,28 +378,36 @@ bool Automata::Deterministic()const
         return false;
     }
     const size_t alphabet_size=36;
-    bool alphabet[alphabet_size]={0,};
-    for (State* state:states)
+    size_t states_count=1;
+    states_count=states.size();
+    bool alphabet[states_count][alphabet_size]={0,};
+    for (size_t i=0;i<states_count;++i)
     {
         for (DeltaRelation* delta:edges)
         {
-            if (*state == *delta->getStart())
+            if (delta->getLabel()=='~')//Check if there are epsilon transitions
             {
+                return false;
+            }
+               
+            if (*states[i] == *delta->getStart())
+            {
+                
                 if (delta->getLabel() >= 48 && delta->getLabel() <= 57) // if the char is digit
                 {
-                    if (alphabet[delta->getLabel()-48])
+                    if (alphabet[i][delta->getLabel()-48])
                     {
                         return false;
                     }
-                    alphabet[delta->getLabel()-48] = true;
+                    alphabet[i][delta->getLabel()-48] = true;
                 }
                 if(delta->getLabel()>=97&&delta->getLabel()<=122)//if the char is small letter
                 {
-                    if(alphabet[delta->getLabel()-87])
+                    if(alphabet[i][delta->getLabel()-87])
                     {
                         return false;
                     }
-                    alphabet[delta->getLabel()-87]=true;
+                    alphabet[i][delta->getLabel()-87]=true;
 
                 }
             }
