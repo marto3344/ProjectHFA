@@ -8,7 +8,6 @@ class Automata{
     Automata()=default;
     Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges);
     Automata(const Automata&other);
-    Automata(std::string regex);
     ~Automata();
 
     const std::vector<State*> getStates();
@@ -27,7 +26,8 @@ class Automata{
     Automata Concat(const Automata &other)const;
     Automata Un()const;
     friend std::istream& operator>>(std::istream& in, Automata& automata);
-
+    
+    static Automata* createAutomataByWord(const std::string &word);
 
     private:
     unsigned int id;
@@ -44,7 +44,7 @@ class Automata{
     bool EdgeIsVisited(const DeltaRelation*,std::vector<DeltaRelation*>&visitedEdges)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
-
+    static bool WordIsValid(const std::string& word);
     Automata getUniqueStates(const Automata&other)const;
 
     void freeMemory();
