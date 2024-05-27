@@ -39,10 +39,14 @@ class Automata{
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
     bool static ContainsState(const State& state,const std::vector<State*>&vec);
-    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates,bool &hasCycle)const;
+    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates,std::vector<DeltaRelation*>& visitedEdges,bool hasCycle)const;
+    bool StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,std::vector<DeltaRelation*>& visitedEdges)const;
+    bool EdgeIsVisited(const DeltaRelation*,std::vector<DeltaRelation*>&visitedEdges)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
+
     Automata getUniqueStates(const Automata&other)const;
+
     void freeMemory();
     
 };
