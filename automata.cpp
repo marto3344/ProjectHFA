@@ -158,12 +158,12 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     return result;   
  }
- const std::vector<State *> Automata::FindConnectedStated(const State &start) const
+ const std::vector<State *> Automata::FindConnectedStated(const State &start,const std::vector<State*>&visited) const
  {
     std::vector<State*> result;
     for (DeltaRelation* delta:edges)
     {
-        if (start==*delta->getStart())
+        if (start==*delta->getStart()&&!ContainsState(*delta->getEnd(),visited))
         {
             result.push_back(delta->getEnd());
         }
@@ -221,6 +221,26 @@ bool Automata:: ContainsStateName(const std::string name)const
    return true;
  }
 
+ bool Automata::Finite()
+ {
+   if(getFinalStates().empty()|| getInitialStates().empty())
+   {
+      return true;
+   }
+   std::vector<State*>visited;
+   const std::vector<State*>initialStates=getInitialStates();
+   bool pathHasCycle;
+   for (State* state:initialStates)
+   {
+      pathHasCycle=0;
+      if(HasSuccCyclePath(*state,visited,pathHasCycle))//If we find successfull path that has cycle->language is not finite
+      {
+        return false;
+      }
+   }
+   
+   return true;
+ }
 
  std::vector<State*> Automata::TraversalWithChar(const std::vector<State*>&currStates, const char c)
  {
@@ -241,7 +261,7 @@ bool Automata:: ContainsStateName(const std::string name)const
 
  bool Automata::FindPaths(const State &start,  std::vector<State *> &visitedStates) const
  {
-    if (FindConnectedStated(start).empty()||ConnectedStatesAreVisited(start,visitedStates))
+    if (FindConnectedStated(start,visitedStates).empty())
     {
         if(start.isFinal())
         {
@@ -251,14 +271,14 @@ bool Automata:: ContainsStateName(const std::string name)const
     }
     for (DeltaRelation* delta:edges)
     {
-        if (start==*delta->getStart()&&!ContainsState(start,visitedStates))
+        if (start==*delta->getStart()&&!ContainsState(*delta->getEnd(),visitedStates))
         {
             visitedStates.push_back(delta->getEnd());
             return FindPaths(*delta->getEnd(),visitedStates);
         }
         
     }
-  return true;
+  return false;
  }
 
  bool Automata::ContainsState(const State &state, const std::vector<State *> &vec)
@@ -274,10 +294,16 @@ bool Automata:: ContainsStateName(const std::string name)const
      return false;
  }
 
+ bool Automata::HasSuccCyclePath(const State &start, std::vector<State *> &visitedStates, bool &hasCycle) const
+ {
+   
+     return false;
+ }
+
  void Automata::draw() const
  {
    std::ofstream out;
-   out.open("Automata.dot");
+   out.open("Automata.dot",std::ios::app);
    if(out.is_open())
    {
      out<<"digraph Automata_"<<id<<"{\n";
@@ -312,7 +338,7 @@ bool Automata:: ContainsStateName(const std::string name)const
         out<<"->"<<edges[i]->getEnd()->getStateName();
         out<<"[label=\""<<edges[i]->getLabel()<<"\"]"<<"\n" ;  
      }
-     out<<"}";
+     out<<"}\n";
      out.close();
    }
    else throw "coudn't draw the automata";
@@ -412,14 +438,3 @@ bool Automata::Deterministic()const
     }
     return true;
 }
- bool Automata::ConnectedStatesAreVisited(const State&start,const std::vector<State*>&visited)const
- {
-     for (State* state:FindConnectedStated(start))
-     {
-        if (!ContainsState(*state,visited))
-        {
-            return false;
-        }       
-     }   
-     return true;
- }

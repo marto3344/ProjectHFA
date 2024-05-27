@@ -35,13 +35,13 @@ class Automata{
     std::vector<DeltaRelation*>edges;
     void CalculateStates();
     bool ContainsStateName(const std::string)const;
-    const std::vector<State*>FindConnectedStated(const State& start)const;
+    const std::vector<State*>FindConnectedStated(const State& start,const std::vector<State*>&visited)const;
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
     bool static ContainsState(const State& state,const std::vector<State*>&vec);
+    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates,bool &hasCycle)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
-    bool ConnectedStatesAreVisited(const State& start,const std::vector<State*>&visited)const;
     Automata getUniqueStates(const Automata&other)const;
     void freeMemory();
     
