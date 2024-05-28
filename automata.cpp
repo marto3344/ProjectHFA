@@ -86,7 +86,6 @@ void Automata::Print() const
  }
  void Automata::CalculateStates()
  {
-
      for (DeltaRelation* delta : edges)
      {
          if (!ContainsStateName(delta->getStart()->getStateName()))
@@ -129,8 +128,8 @@ bool Automata:: ContainsStateName(const std::string name)const
             {
                 if (other.states[j]->isInitial())
                 {
-                    result.edges.push_back(new DeltaRelation(*result.states[i],*other.states[j],'~'));
-                    other.states[j]->setInitial(false);
+                    result.edges.push_back(new DeltaRelation(*result.states[i],*result.states[i+j],'~'));//Da se fiksne s move Constructor
+                    result.states[i+j]->setInitial(false);
                 }                
             }           
         }
@@ -157,7 +156,17 @@ bool Automata:: ContainsStateName(const std::string name)const
         }
         
     }
+    result.CalculateStates();
     return result;   
+ }
+ Automata Automata::KleeneStar() const
+ {
+    Automata result;
+    result=this->Un();
+     State e("e",1,1);//State that recognizes epsilone
+     result.edges.push_back(new DeltaRelation(e,e,'~'));
+     result.states.push_back(&e);
+     return result;
  }
  const std::vector<State *> Automata::FindConnectedStated(const State &start, const std::vector<State *> &visited) const
  {
@@ -523,23 +532,63 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     
     return true;
  }
- Automata *Automata::createAutomataByWord(const std::string &word)
+ Automata Automata::createAutomataByWord(const std::string &word)
  {
     if(!WordIsValid(word))
     {
         throw "Word is not from (Sigma)* !";
     }
-    Automata* automata=new Automata();
+    Automata automata;
     State start("s",0,1);
     for (size_t i = 0; i < word.size()-1; i++)
     {
       State end(std::to_string(i),0,0);
       DeltaRelation delta(start,end,word[i]);
-      automata->edges.push_back(new DeltaRelation(start,end,word[i]));
+      automata.edges.push_back(new DeltaRelation(start,end,word[i]));
       start=end;
     }
     State final("f",1,0);
-    automata->edges.push_back(new DeltaRelation(start,final,word[word.size()-1]));
-    automata->CalculateStates();
+    automata.edges.push_back(new DeltaRelation(start,final,word[word.size()-1]));
+    automata.CalculateStates();
      return automata;
+ }
+
+ Automata Automata::createAutomataByRegex(const std::string regex)//The idea about recursive tree parsing is from seminar
+ {
+    //ValidateRegex
+    std::string regxWithoutBrackets=regex.substr(1,regex.size()-2);
+    unsigned bracketsCount=0;
+    size_t strLen=regxWithoutBrackets.size();
+    std::cout<<regxWithoutBrackets<<'\n';
+    if (WordIsValid(regxWithoutBrackets))
+    {
+        return Automata::createAutomataByWord(regxWithoutBrackets);
+    }
+    for (size_t i = 0; i < regxWithoutBrackets.size(); i++)
+    {
+        if(regxWithoutBrackets[i]=='(')
+         bracketsCount++;
+        else if(regxWithoutBrackets[i]==')')
+         bracketsCount--;
+        if (bracketsCount==0)
+        {
+            if(regxWithoutBrackets[i]=='*')
+            {
+                return Automata::createAutomataByRegex(regxWithoutBrackets.substr(0,i)).KleeneStar();
+            }
+            else if(regxWithoutBrackets[i]=='+')
+            {
+              return Automata::createAutomataByRegex(regxWithoutBrackets.substr(0,i)).Union(Automata::createAutomataByRegex(regxWithoutBrackets.substr(i+1,strLen-i-1)));
+            }
+            else if(regxWithoutBrackets[i]=='.')
+            {
+              return Automata::createAutomataByRegex(regxWithoutBrackets.substr(0,i)).Concat(Automata::createAutomataByRegex(regxWithoutBrackets.substr(i+1,strLen-i-1)));  
+            }
+        }
+              
+    }
+    
+    
+
+     return Automata();
  }

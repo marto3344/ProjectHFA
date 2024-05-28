@@ -25,9 +25,11 @@ class Automata{
     Automata Union(const Automata &other)const;
     Automata Concat(const Automata &other)const;
     Automata Un()const;
+    Automata KleeneStar()const;
     friend std::istream& operator>>(std::istream& in, Automata& automata);
     
-    static Automata* createAutomataByWord(const std::string &word);
+    static Automata createAutomataByWord(const std::string &word);
+    static Automata createAutomataByRegex(const std::string regex);
 
     private:
     unsigned int id;
