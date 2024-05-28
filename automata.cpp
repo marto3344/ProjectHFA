@@ -161,12 +161,11 @@ bool Automata:: ContainsStateName(const std::string name)const
  }
  Automata Automata::KleeneStar() const
  {
-    Automata result;
-    result=this->Un();
+    //Automata result;
+    //result=this->Un();
      State e("e",1,1);//State that recognizes epsilone
-     result.edges.push_back(new DeltaRelation(e,e,'~'));
-     result.states.push_back(&e);
-     return result;
+     //result.states.push_back(&e);
+     return this->Un();
  }
  const std::vector<State *> Automata::FindConnectedStated(const State &start, const std::vector<State *> &visited) const
  {
@@ -249,7 +248,7 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
       hasCycle=0;
       visitedStates.push_back(state);
-      if(HasSuccCyclePath(*state,visitedStates,visitedEdges,hasCycle))//If we find successfull path that has cycle->language is not finite
+      if(HasSuccCyclePath(*state,visitedStates,hasCycle))//If we find successfull path that has cycle->language is not finite
       {
         return false;
       }
@@ -312,20 +311,18 @@ bool Automata:: ContainsStateName(const std::string name)const
      return false;
  }
 
- bool Automata::HasSuccCyclePath(const State &start, std::vector<State *> &visitedStates,std::vector<DeltaRelation*>&visitedEdges, bool hasCycle) const
+ bool Automata::HasSuccCyclePath(const State &start, std::vector<State *> visitedStates, bool hasCycle) const
  {
-    if (StateFormsCycle(start,visitedStates,visitedEdges))
+    // if (StateFormsCycle(start,visitedStates))
+    // {
+      
+    //   hasCycle=1;
+
+    // }
+    if (FindConnectedStated(start,visitedStates).empty())
     {
-      hasCycle=1;
-    }
-    
-    if(start.isFinal()&&hasCycle)
-    {
-        return true;
-    }
-    if (start.isFinal()&&FindConnectedStated(start,visitedStates).empty())
-    {
-        return false;
+        std::cout<<"Return here";
+        return hasCycle;
     }
     
     for (DeltaRelation* delta:edges)
@@ -338,11 +335,10 @@ bool Automata:: ContainsStateName(const std::string name)const
             }
             
             std::cout<<"state: "<<start.getStateName()<<"\n";
-            visitedEdges.push_back(delta);
             visitedStates.push_back(delta->getEnd());
            
             
-            if(StateFormsCycle(*delta->getEnd(),visitedStates, visitedEdges))
+            if(StateFormsCycle(*delta->getEnd(),visitedStates))
             {
                 if(delta->getEnd()->isFinal())
                 {
@@ -351,7 +347,7 @@ bool Automata:: ContainsStateName(const std::string name)const
                 }
                 hasCycle=true;
             }
-            return HasSuccCyclePath(*delta->getEnd(),visitedStates,visitedEdges,hasCycle);
+            return HasSuccCyclePath(*delta->getEnd(),visitedStates,hasCycle);
         }
         
     }
@@ -431,11 +427,12 @@ bool Automata:: ContainsStateName(const std::string name)const
   {
     std::ofstream os;
     os.open(filename,std::ios::app);
-    os<<edges.size()<<'\n';
-    for (size_t i=0;i<edges.size();++i)
+    os<<'\n'<<edges.size()<<'\n';
+    for (size_t i=0;i<edges.size()-1;++i)
     {
         os<<*edges[i]<<'\n';
     }
+    os<<*edges[edges.size()-1];
     os.close();
   }
   std::istream& operator>>(std::istream& in, Automata& automata)
@@ -496,11 +493,11 @@ bool Automata::Deterministic()const
     }
     return true;
 }
-bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,std::vector<DeltaRelation*>&visitedEdges)const
+bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates)const
 {
     for (DeltaRelation*delta:edges)
     {
-       if (state==*delta->getStart()&&ContainsState(*delta->getEnd(),visitedStates)&&!EdgeIsVisited(delta,visitedEdges));
+       if (state==*delta->getStart()&&ContainsState(*delta->getEnd(),visitedStates));
        {
          return true;
        }
@@ -553,13 +550,12 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
      return automata;
  }
 
- Automata Automata::createAutomataByRegex(const std::string regex)//The idea about recursive tree parsing is from seminar
+ Automata Automata::createAutomataByRegex(const std::string &regex)//The idea about recursive tree parsing is from seminar
  {
     //ValidateRegex
     std::string regxWithoutBrackets=regex.substr(1,regex.size()-2);
     unsigned bracketsCount=0;
     size_t strLen=regxWithoutBrackets.size();
-    std::cout<<regxWithoutBrackets<<'\n';
     if (WordIsValid(regxWithoutBrackets))
     {
         return Automata::createAutomataByWord(regxWithoutBrackets);
@@ -587,8 +583,5 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
         }
               
     }
-    
-    
-
      return Automata();
  }

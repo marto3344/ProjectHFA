@@ -56,7 +56,14 @@ void CommandInterface::Run()
       }
       try
       {
-        Open(filename);
+        if(!fileIsOpened)
+        {
+         Open(filename);
+        }
+        else
+        {
+         std::cout<<NoOpenedFileMessage;
+        }
       }
       catch(const std::string str)
       {
@@ -193,6 +200,7 @@ void CommandInterface::List() const
 
 void CommandInterface::Deserialize(std::istream& in)
 {
+  in.ignore();
   while (!in.eof())
    {
      Automata* a=new Automata();
