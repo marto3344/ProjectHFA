@@ -145,7 +145,7 @@ bool Automata:: ContainsStateName(const std::string name)const
                 if (other.states[j]->isInitial())
                 {
                     result.states[states.size()+j]->setInitial(false);
-                    result.edges.push_back(new DeltaRelation(std::move(*result.states[i]),std::move(*result.states[states.size()+j]),'~'));
+                    result.edges.push_back(new DeltaRelation(*result.states[i],*result.states[states.size()+j],'~'));
                 }                
             }           
         }

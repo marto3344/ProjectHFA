@@ -6,12 +6,6 @@ DeltaRelation:: DeltaRelation(const State &_start, const State &_end, char _labe
   end=new State(_end);
   label=_label;
 }
-DeltaRelation::DeltaRelation(State &&_start, State &&_end, char _label)
-{
-    *start=std::move(_start);
-    *end=std::move(_end);
-    label=std::move(_label);
-}
 DeltaRelation::DeltaRelation()
 {
     start=nullptr;
