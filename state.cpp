@@ -13,7 +13,7 @@
   {
     stateName=other.stateName;
     final=other.final;
-     initial=other.initial;
+    initial=other.initial;
   }
   State::State(State &&rhs)
   {

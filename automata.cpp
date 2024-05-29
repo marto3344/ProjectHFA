@@ -81,11 +81,11 @@ void Automata::Print() const
         std::string resultEnd=other.edges[i]->getEnd()->getStateName();
         while (other.ContainsStateName(resultStart)||this->ContainsStateName(resultStart))
         {
-            resultStart="{"+resultStart+"}";
+            resultStart=resultStart+"0";
         }
         while (other.ContainsStateName(resultEnd)||this->ContainsStateName(resultEnd))
         {
-            resultEnd="{"+resultEnd+"}";
+            resultEnd=resultEnd+"0";
         }
         State * resultStartState=new State(*other.edges[i]->getStart());
         resultStartState->setStateName(resultStart);
@@ -151,6 +151,7 @@ bool Automata:: ContainsStateName(const std::string name)const
         }
         
     }
+    result.CalculateStates();
     return result;   
  }
  Automata Automata:: Un()const
