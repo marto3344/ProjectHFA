@@ -7,10 +7,10 @@ class State{
   State(const std::string &_name,bool _final,bool _initial);
   State();
   State(const State &other);
-  State(const State &&rhs);
+  State(State &&rhs);
   ~State()=default;
   State&  operator=(const State&other);
-  State& operator=(const State&&rhs);
+  State& operator=(State&&rhs);
   bool operator==(const State &other)const;
   const std::string& getStateName()const;
   void setStateName(const std::string &name);

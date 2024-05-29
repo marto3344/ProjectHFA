@@ -15,13 +15,13 @@
     final=other.final;
      initial=other.initial;
   }
-  State::State(const State &&rhs)
+  State::State(State &&rhs)
   {
     stateName=std::move(rhs.stateName);
     final=rhs.final;
     initial=rhs.initial;
   }
-  State& State::operator=(const State&&rhs)
+  State& State::operator=(State&&rhs)
   {
     if(this==&rhs)
     {
