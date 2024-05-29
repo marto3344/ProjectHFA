@@ -77,8 +77,8 @@ void Automata::Print() const
     }
     for (size_t i = 0; i < other.edges.size(); i++)
     {
-        std::string resultStart="{"+other.edges[i]->getStart()->getStateName()+"}";
-        std::string resultEnd="{"+other.edges[i]->getEnd()->getStateName()+"}";
+        std::string resultStart=other.edges[i]->getStart()->getStateName();
+        std::string resultEnd=other.edges[i]->getEnd()->getStateName();
         while (other.ContainsStateName(resultStart)||this->ContainsStateName(resultStart))
         {
             resultStart="{"+resultStart+"}";
@@ -144,8 +144,8 @@ bool Automata:: ContainsStateName(const std::string name)const
             {
                 if (other.states[j]->isInitial())
                 {
-                    result.edges.push_back(new DeltaRelation(*result.states[i],*result.states[i+j],'~'));//Da se fiksne s move Constructor
-                    result.states[i+j]->setInitial(false);
+                    result.states[states.size()+j]->setInitial(false);
+                    result.edges.push_back(new DeltaRelation(std::move(*result.states[i]),std::move(*result.states[states.size()+j]),'~'));
                 }                
             }           
         }
@@ -376,34 +376,21 @@ bool Automata:: ContainsStateName(const std::string name)const
    out.open("Automata.dot",std::ios::app);
    if(out.is_open())
    {
+    std::vector<State*>initialStates=getInitialStates();
+    std::vector<State*>finialStates=getFinalStates();
      out<<"digraph Automata_"<<id<<"{\n";
+     for (size_t i = 0; i <initialStates.size(); i++)//Print pointing arrow to the initial states
+     {
+           out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
+           out<<" hiddenNode->"<<initialStates[i]->getStateName()<<"[arrowtail=none]"<<"\n";
+     }
+     for (size_t i = 0; i < finialStates.size(); i++)
+     {
+        out<<" "<<finialStates[i]->getStateName()<<"[shape=doublecircle]\n";
+     }
+     
      for (size_t i = 0; i < edges.size(); i++)
      {
-        if(edges[i]->getStart()->isInitial())
-        {
-           out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
-           out<<" hiddenNode->"<<edges[i]->getStart()->getStateName()<<"[arrowtail=none]"<<"\n";
-        }
-        if(edges[i]->getEnd()->isInitial())
-        {
-           
-           out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
-           out<<" hiddenNode->"<<edges[i]->getEnd()->getStateName()<<"[arrowtail=none]"<<"\n";
-        }
-        if(edges[i]->getStart()->isFinal())
-        {
-           out<<" "<<edges[i]->getStart()->getStateName()<<"[shape=doublecircle]\n";
-        }
-        else{
-            out<<" "<<edges[i]->getStart()->getStateName()<<"[shape=circle]\n";
-        }
-        if(edges[i]->getEnd()->isFinal())
-        {
-           out<<" "<<edges[i]->getEnd()->getStateName()<<"[shape=doublecircle]\n";
-        }
-        else{
-            out<<" "<<edges[i]->getEnd()->getStateName()<<"[shape=circle]\n";
-        }
         out<<" "<<edges[i]->getStart()->getStateName();
         out<<"->"<<edges[i]->getEnd()->getStateName();
         out<<"[label=\""<<edges[i]->getLabel()<<"\"]"<<"\n" ;  

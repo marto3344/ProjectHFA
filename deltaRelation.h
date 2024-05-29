@@ -7,6 +7,7 @@ class DeltaRelation
 {
    public:
    DeltaRelation(const  State &_start, const State &_end, char _label);
+   DeltaRelation(State &&start,State &&end, char _label);
    DeltaRelation();
    DeltaRelation(const DeltaRelation&other);
    DeltaRelation(DeltaRelation&&other);
