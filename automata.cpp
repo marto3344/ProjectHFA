@@ -427,12 +427,7 @@ bool Automata:: ContainsStateName(const std::string name)const
   {
     std::ofstream os;
     os.open(filename,std::ios::app);
-    os<<'\n'<<edges.size()<<'\n';
-    for (size_t i=0;i<edges.size()-1;++i)
-    {
-        os<<*edges[i]<<'\n';
-    }
-    os<<*edges[edges.size()-1];
+    os<<*this;
     os.close();
   }
   std::istream& operator>>(std::istream& in, Automata& automata)
@@ -448,50 +443,61 @@ bool Automata:: ContainsStateName(const std::string name)const
     automata.CalculateStates();
     return in;
   }
-bool Automata::Deterministic()const
-{
-    if(getInitialStates().size()>1)
+  std::ostream &operator<<(std::ostream &out, const Automata &automata)
+  {
+     out<<'\n'<<automata.edges.size()<<'\n';
+    for (size_t i=0;i<automata.edges.size()-1;++i)
     {
-        return false;
+        out<<*automata.edges[i]<<'\n';
     }
-    const size_t alphabet_size=36;
-    size_t states_count=1;
-    states_count=states.size();
-    bool alphabet[states_count][alphabet_size]={0,};
-    for (size_t i=0;i<states_count;++i)
-    {
-        for (DeltaRelation* delta:edges)
-        {
-            if (delta->getLabel()=='~')//Check if there are epsilon transitions
-            {
-                return false;
-            }
-               
-            if (*states[i] == *delta->getStart())
-            {
-                
-                if (delta->getLabel() >= 48 && delta->getLabel() <= 57) // if the char is digit
-                {
-                    if (alphabet[i][delta->getLabel()-48])
-                    {
-                        return false;
-                    }
-                    alphabet[i][delta->getLabel()-48] = true;
-                }
-                if(delta->getLabel()>=97&&delta->getLabel()<=122)//if the char is small letter
-                {
-                    if(alphabet[i][delta->getLabel()-87])
-                    {
-                        return false;
-                    }
-                    alphabet[i][delta->getLabel()-87]=true;
+    out<<*automata.edges[automata.edges.size()-1];
+     
+     return out;
+  }
+  bool Automata::Deterministic() const
+  {
+      if (getInitialStates().size() > 1)
+      {
+          return false;
+      }
+      const size_t alphabet_size = 36;
+      size_t states_count = 1;
+      states_count = states.size();
+      bool alphabet[states_count][alphabet_size] = {
+          0,
+      };
+      for (size_t i = 0; i < states_count; ++i)
+      {
+          for (DeltaRelation *delta : edges)
+          {
+              if (delta->getLabel() == '~') // Check if there are epsilon transitions
+              {
+                  return false;
+              }
 
-                }
-            }
-        }
-        
-    }
-    return true;
+              if (*states[i] == *delta->getStart())
+              {
+
+                  if (delta->getLabel() >= 48 && delta->getLabel() <= 57) // if the char is digit
+                  {
+                      if (alphabet[i][delta->getLabel() - 48])
+                      {
+                          return false;
+                      }
+                      alphabet[i][delta->getLabel() - 48] = true;
+                  }
+                  if (delta->getLabel() >= 97 && delta->getLabel() <= 122) // if the char is small letter
+                  {
+                      if (alphabet[i][delta->getLabel() - 87])
+                      {
+                          return false;
+                      }
+                      alphabet[i][delta->getLabel() - 87] = true;
+                  }
+              }
+          }
+      }
+      return true;
 }
 bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates)const
 {

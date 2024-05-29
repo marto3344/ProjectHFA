@@ -65,7 +65,7 @@ void CommandInterface::Run()
          std::cout<<NoOpenedFileMessage;
         }
       }
-      catch(const std::string str)
+      catch(const char* str)
       {
         std::cout<<str;
       }
@@ -86,35 +86,135 @@ void CommandInterface::Run()
     }
     else if(GetCommand(inputStr)=="deterministic")
     {
-      if(!fileIsOpened)
+      if (!fileIsOpened)
       {
-        std::cout<<NoOpenedFileMessage;
-        break;
+        std::cout << NoOpenedFileMessage;
       }
-      std::string automataId;
-      for (size_t i = 14; i < inputStr.size(); i++)
+      else
       {
-        automataId+=inputStr[i];
+        std::string automataId;
+        for (size_t i = 14; i < inputStr.size(); i++)
+        {
+          automataId += inputStr[i];
+        }
+        size_t id=std::stoi(automataId);
+        if(id<0||id>=automatas.size())
+        {
+          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
+        }
+        else
+        {
+         std::cout << std::boolalpha << automatas[id]->Deterministic() << '\n';
+        }
       }
-      std::cout<<std::boolalpha<<automatas[std::stoi(automataId)]->Deterministic()<<'\n';
     }
     else if(GetCommand(inputStr)=="empty")
     {
-      if(!fileIsOpened)
+      if (!fileIsOpened)
       {
-        std::cout<<NoOpenedFileMessage;
-        break;
+        std::cout << NoOpenedFileMessage;
       }
-      std::string automataId;
-      for (size_t i = 5; i < inputStr.size(); i++)
+      else
       {
-        automataId+=inputStr[i];
+        std::string automataId;
+        for (size_t i = 5; i < inputStr.size(); i++)
+        {
+          automataId += inputStr[i];
+        }
+        size_t id=std::stoi(automataId);
+        if(id<0||id>=automatas.size())
+        {
+          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
+        }
+        else
+        {
+         std::cout << std::boolalpha << automatas[id]->Empty() << '\n';
+        }
       }
-      std::cout<<std::boolalpha<<automatas[std::stoi(automataId)]->Empty()<<'\n';
+    }
+    else if(GetCommand(inputStr)=="save"&&inputStr.size()!=4)
+    {
+      if (!fileIsOpened)
+      {
+        std::cout << NoOpenedFileMessage;
+      }
+      else
+      {
+        std::string automataId;
+        for (size_t i = 5; i < inputStr.size(); i++)//TODO:Parse filename
+        {
+          automataId += inputStr[i];
+        }
+        size_t id=std::stoi(automataId);
+        if(id<0||id>=automatas.size())
+        {
+          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
+        }
+        else
+        {
+           try
+           {
+            automatas[id]->Save(openedfile);
+            std::cout<<"Successfully saved automata with id "<<id<<" into "<<openedfile<<'\n';
+           }
+           catch(const std::exception& e)
+           {
+            std::cerr << e.what() << '\n';
+           }
+           
+          
+        }
+        
+      }
+    }
+    else if (inputStr == "save")
+    {
+      if (!fileIsOpened)
+      {
+        std::cout << NoOpenedFileMessage;
+      }
+      else
+      {
+        try
+        {
+          Save(openedfile);
+        }
+        catch (const char* err)
+        {
+          std::cout << err;
+        }
+        catch (const std::exception &e)
+        {
+          std::cerr << e.what() << '\n';
+        }
+      }
+    }
+    else if(GetCommand(inputStr)=="saveas")
+    {
+      std::string fileName;
+      fileName=inputStr.substr(7,inputStr.size()-7);
+      std::cout<<fileName<<'\n';
+      try
+      {
+        Save(fileName);
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+
     }
     else if(inputStr=="list")
     {
-      List();
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else
+      {
+       List();
+      }
     }
    inputStr.clear();
    std::getline(std::cin,inputStr);
@@ -131,8 +231,8 @@ void CommandInterface::Open(const std::string &filename)
           Deserialize(in);
           openedfile = filename;
           fileIsOpened = true;
-          std::cout<<"Successfully opened "<<filename<<'\n';
           in.close();
+          std::cout<<"Successfully opened "<<filename<<'\n';
         }
         else throw "coudn't open the file";
 }
@@ -160,22 +260,27 @@ void CommandInterface::Exit()
     {
       return;
     }
-    //cleanMemory();
-    std::cout<<"Exiting the program!";
-    exit(0);
+    else if(conf=='y')
+    {
+     std::cout<<"Exiting the program!";
+     //cleanMemory();
+     exit(0);
+    }
+    std::cout<<"Invalid argument. Please try again!";
 }
 
 void CommandInterface::Help() const
 {
-  std::cout<<"The following commands are supported:\n";
-  std::cout<<"open <file> - opens file\n";
-  std::cout<<"close - closes currently opened file\n";
-  std::cout<<"save - saves the opened file\n";
-  std::cout<<"save <id> <filename> - saves the automata in the file with <filename>!\n";
-  std::cout<<"save as <file> - saves the currently opened file in <file>\n";
-  std::cout<<"help - prints this information\n";
-  std::cout<<"exit - exists the program\n";
-  std::cout<<"list - prints the id-s of all read automatas\n";
+  using std::cout;
+  cout<<"The following commands are supported:\n";
+  cout<<"open <file> - opens file\n";
+  cout<<"close - closes currently opened file\n";
+  cout<<"save - saves the opened file\n";
+  cout<<"save <id> <filename> - saves the automata in the file with <filename>!\n";
+  cout<<"save as <file> - saves the currently opened file in <file>\n";
+  cout<<"help - prints this information\n";
+  cout<<"exit - exists the program\n";
+  cout<<"list - prints the id-s of all read automatas\n";
   //TODO::cout the rest of commands
   
 
@@ -196,6 +301,22 @@ void CommandInterface::List() const
      //std::cout<<automata->getId()<<'\n';
      automata->Print();
   }
+}
+
+void CommandInterface::Save(const std::string& fileName) const
+{
+  std:: ofstream out;
+  out.open(fileName,std::ios::trunc);
+  if(out.is_open())
+  {
+    for (Automata*automata:automatas)
+    {
+      out<<*automata;
+    }
+    out.close();
+    std::cout<<"Successfully saved "<<fileName<<'\n';
+  }
+  else throw "Coud't save the file!";
 }
 
 void CommandInterface::Deserialize(std::istream& in)

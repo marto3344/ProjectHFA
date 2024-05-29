@@ -27,6 +27,7 @@ class Automata{
     Automata Un()const;
     Automata KleeneStar()const;
     friend std::istream& operator>>(std::istream& in, Automata& automata);
+    friend std::ostream& operator<<(std::ostream& out,const Automata& automata);
     
     static Automata createAutomataByWord(const std::string &word);
     static Automata createAutomataByRegex(const std::string &regex);
