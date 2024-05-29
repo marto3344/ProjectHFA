@@ -39,5 +39,6 @@ class CommandInterface{
   void Draw(unsigned)const;
   static const std::string GetCommand(const std::string);
   void cleanMemory();
+  
 
 };

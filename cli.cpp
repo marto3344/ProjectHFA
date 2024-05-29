@@ -193,11 +193,11 @@ void CommandInterface::Run()
     }
     else if(GetCommand(inputStr)=="saveas")
     {
-      std::string fileName;
-      fileName=inputStr.substr(7,inputStr.size()-7);
-      std::cout<<fileName<<'\n';
       try
       {
+        std::string fileName;
+        fileName=inputStr.substr(7,inputStr.size()-7);
+        std::cout<<fileName<<'\n';
         Save(fileName);
       }
       catch(const std::exception& e)
@@ -226,9 +226,17 @@ void CommandInterface::Run()
       }
       else
       {
-       unsigned automataId;
-       automataId=std::stoi(inputStr.substr(6,inputStr.size()-6));
-       PrintAutomata(automataId);
+        try
+        {
+          unsigned automataId;
+          automataId=std::stoi(inputStr.substr(6,inputStr.size()-6));
+          PrintAutomata(automataId);
+        }
+        catch(const std::exception& e)
+        {
+          std::cerr << e.what() << '\n';
+        }
+        
       }
     }
     else if(GetCommand(inputStr)=="union")
@@ -237,43 +245,102 @@ void CommandInterface::Run()
       {
         std::cout<<NoOpenedFileMessage;
       }
-      else{
-        std::string _id1;
-        for (size_t i = 6; i < inputStr.size(); i++)
-        {
-          if(inputStr[i]==' ')
-          {
-             break;
-          }
-          _id1+=inputStr[i];
-        }
-        unsigned id1=std::stoi(_id1);
-        unsigned id2=std::stoi(inputStr.substr(6+_id1.length(),inputStr.length()-6-_id1.length()));
-        std::cout<<id1<<' '<<id2<<'\n';
+      else
+      {
         try
         {
-          Union(id1,id2);
+          std::string _id1;
+          for (size_t i = 6; i < inputStr.size(); i++)
+          {
+            if (inputStr[i] == ' ')
+            {
+              break;
+            }
+            _id1 += inputStr[i];
+          }
+          unsigned id1 = std::stoi(_id1);
+          unsigned id2 = std::stoi(inputStr.substr(6 + _id1.length(), inputStr.length() - 6 - _id1.length()));
+          std::cout << id1 << ' ' << id2 << '\n';
+
+          Union(id1, id2);
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
           std::cerr << e.what() << '\n';
         }
-        
-        
       }
-
     }
-    else if(GetCommand(inputStr)=="concat")
+    else if (GetCommand(inputStr) == "concat")
     {
-
+      if (!fileIsOpened)
+      {
+        std::cout << NoOpenedFileMessage;
+      }
+      else
+      {
+        try
+        {
+          std::string _id1;
+          for (size_t i = 7; i < inputStr.size(); i++)
+          {
+            if (inputStr[i] == ' ')
+            {
+              break;
+            }
+            _id1 += inputStr[i];
+          }
+          unsigned id1 = std::stoi(_id1);
+          unsigned id2 = std::stoi(inputStr.substr(7 + _id1.length(), inputStr.length() - 7 - _id1.length()));
+          Concat(id1, id2);
+        }
+        catch (const std::exception &e)
+        {
+          std::cerr << e.what() << '\n';
+        }
+      }
     }
     else if(GetCommand(inputStr)=="un")
     {
-
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else{
+         try
+         {
+          unsigned id=std::stoi(inputStr.substr(3,inputStr.length()-3));
+          Un(id);
+         }
+         catch(const std::exception& e)
+         {
+          std::cerr << e.what() << '\n';
+         }
+         
+      }
     }
     else if(GetCommand(inputStr)=="reg")
     {
       
+    }
+    else if(GetCommand(inputStr)=="draw")
+    {
+      
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else{
+         try
+         {
+          unsigned id=std::stoi(inputStr.substr(5,inputStr.length()-5));
+          Draw(id);
+         }
+         catch(const std::exception& e)
+         {
+          std::cerr << e.what() << '\n';
+         }
+         
+      }
     }
    inputStr.clear();
    std::getline(std::cin,inputStr);
@@ -363,7 +430,12 @@ void CommandInterface::cleanMemory()
 
 void CommandInterface::List() const
 {
-   std::cout<<"There are "<<automatas.size()<<" read automatas with id from 0 to "<<automatas.size()-1<<'\n';
+   std::cout<<"There are "<<automatas.size();
+   if(automatas.size()!=0)
+   {
+    std::cout<<" read automatas with id from 0 to "<<automatas.size()-1;
+   }
+   std::cout<<'\n';
 }
 
 void CommandInterface::Save(const std::string& fileName) const
@@ -408,8 +480,41 @@ void CommandInterface::Union(unsigned const id1, unsigned const id2)
   *result=automatas[id1]->Union(*automatas[id2]);
   result->setId(automatas.size());
   automatas.push_back(result);
-  std::cout<<result->getId()<<'\n';
+  std::cout<<"Created a union of "<<id1<<" and "<<id2<<"with id: "<<result->getId()<<'\n';
   
+}
+
+void CommandInterface::Concat(unsigned const id1, unsigned const id2)
+{
+  if(id1<0 ||id1>automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id:"<<id1<<'\n';
+    return;
+  }
+  if(id2<0||id2>automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id:"<<id2<<'\n';
+    return;
+  }
+  Automata* result=new Automata();
+  *result=automatas[id1]->Concat(*automatas[id2]);
+  result->setId(automatas.size());
+  automatas.push_back(result);
+  std::cout<<"Created a concat of "<<id1<<" and "<<id2<<"with id: "<<result->getId()<<'\n';
+}
+
+void CommandInterface::Un(unsigned const id)
+{
+  if(id<0||id>=automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id.\n";
+    return;
+  }
+  Automata* result=new Automata();
+  *result=automatas[id]->Un();
+  result->setId(automatas.size());
+  automatas.push_back(result);
+  std::cout<<"Created a L+ of "<<id<<" with id: "<<result->getId()<<'\n';
 }
 
 void CommandInterface::Deserialize(std::istream& in)
