@@ -62,7 +62,7 @@ void CommandInterface::Run()
         }
         else
         {
-         std::cout<<NoOpenedFileMessage;
+         std::cout<<"File "<<openedfile<<"is already opened! Please close it before opening another\n";
         }
       }
       catch(const char* str)
@@ -80,7 +80,9 @@ void CommandInterface::Run()
       if(!fileIsOpened)
       {
         std::cout<<NoOpenedFileMessage;
-        break;
+      }
+      else{
+
       }
 
     }
@@ -216,6 +218,35 @@ void CommandInterface::Run()
        List();
       }
     }
+    else if(GetCommand(inputStr)=="print")
+    {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else
+      {
+       unsigned automataId;
+       automataId=std::stoi(inputStr.substr(6,inputStr.size()-6));
+       PrintAutomata(automataId);
+      }
+    }
+    else if(GetCommand(inputStr)=="union")
+    {
+
+    }
+    else if(GetCommand(inputStr)=="concat")
+    {
+
+    }
+    else if(GetCommand(inputStr)=="un")
+    {
+
+    }
+    else if(GetCommand(inputStr)=="reg")
+    {
+      
+    }
    inputStr.clear();
    std::getline(std::cin,inputStr);
   }
@@ -246,10 +277,16 @@ void CommandInterface::Close()
     {
       return;
     }
-    //cleanMemory();
-    automatas.clear();
-    openedfile="";
-    fileIsOpened=0;
+    else if(conf=='y')
+    {
+     cleanMemory();
+     automatas.clear();
+     fileIsOpened=0;
+     std::cout<<openedfile<<" closed successfully!\n";
+     openedfile="";
+    }
+    else
+     std::cout<<"Invalid argument please try again!\n";
 }
 void CommandInterface::Exit()
 {
@@ -263,7 +300,7 @@ void CommandInterface::Exit()
     else if(conf=='y')
     {
      std::cout<<"Exiting the program!";
-     //cleanMemory();
+     cleanMemory();
      exit(0);
     }
     std::cout<<"Invalid argument. Please try again!";
@@ -296,11 +333,7 @@ void CommandInterface::cleanMemory()
 
 void CommandInterface::List() const
 {
-  for(Automata* automata:automatas)
-  {
-     //std::cout<<automata->getId()<<'\n';
-     automata->Print();
-  }
+   std::cout<<"There are "<<automatas.size()<<" read automatas with id from 0 to "<<automatas.size()<<'\n';
 }
 
 void CommandInterface::Save(const std::string& fileName) const
@@ -317,6 +350,16 @@ void CommandInterface::Save(const std::string& fileName) const
     std::cout<<"Successfully saved "<<fileName<<'\n';
   }
   else throw "Coud't save the file!";
+}
+
+void CommandInterface::PrintAutomata(unsigned const id) const
+{
+  if(id<0||id>=automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id.\n";
+    return;
+  }
+  automatas[id]->Print();
 }
 
 void CommandInterface::Deserialize(std::istream& in)

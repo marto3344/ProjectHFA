@@ -30,6 +30,7 @@ class CommandInterface{
   void Help()const;
   void List()const;
   void Save(const std::string&filename)const;
+  void PrintAutomata(unsigned const id)const;
   public:
   void Deserialize(std::istream&);
   void Draw(unsigned)const;
