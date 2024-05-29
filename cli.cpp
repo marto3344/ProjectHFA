@@ -233,6 +233,34 @@ void CommandInterface::Run()
     }
     else if(GetCommand(inputStr)=="union")
     {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else{
+        std::string _id1;
+        for (size_t i = 6; i < inputStr.size(); i++)
+        {
+          if(inputStr[i]==' ')
+          {
+             break;
+          }
+          _id1+=inputStr[i];
+        }
+        unsigned id1=std::stoi(_id1);
+        unsigned id2=std::stoi(inputStr.substr(6+_id1.length(),inputStr.length()-6-_id1.length()));
+        std::cout<<id1<<' '<<id2<<'\n';
+        try
+        {
+          Union(id1,id2);
+        }
+        catch(const std::exception& e)
+        {
+          std::cerr << e.what() << '\n';
+        }
+        
+        
+      }
 
     }
     else if(GetCommand(inputStr)=="concat")
@@ -252,6 +280,8 @@ void CommandInterface::Run()
   }
  
 }
+
+
 
 void CommandInterface::Open(const std::string &filename)
 {
@@ -333,7 +363,7 @@ void CommandInterface::cleanMemory()
 
 void CommandInterface::List() const
 {
-   std::cout<<"There are "<<automatas.size()<<" read automatas with id from 0 to "<<automatas.size()<<'\n';
+   std::cout<<"There are "<<automatas.size()<<" read automatas with id from 0 to "<<automatas.size()-1<<'\n';
 }
 
 void CommandInterface::Save(const std::string& fileName) const
@@ -356,10 +386,30 @@ void CommandInterface::PrintAutomata(unsigned const id) const
 {
   if(id<0||id>=automatas.size())
   {
-    std::cout<<"Error! There is no automata with this id.\n";
+    std::cout<<"Error! There is no automata with this id:"<<id<<'\n';
     return;
   }
   automatas[id]->Print();
+}
+
+void CommandInterface::Union(unsigned const id1, unsigned const id2)
+{
+  if(id1<0 ||id1>automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id:"<<id1<<'\n';
+    return;
+  }
+  if(id2<0||id2>automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id:"<<id2<<'\n';
+    return;
+  }
+  Automata* result=new Automata();
+  *result=automatas[id1]->Union(*automatas[id2]);
+  result->setId(automatas.size());
+  automatas.push_back(result);
+  std::cout<<result->getId()<<'\n';
+  
 }
 
 void CommandInterface::Deserialize(std::istream& in)

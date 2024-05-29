@@ -18,16 +18,13 @@ DeltaRelation::DeltaRelation(const DeltaRelation&other)
    end=new State( *other.end);
    label=other.label;
 }
-DeltaRelation::~DeltaRelation()
+DeltaRelation::DeltaRelation(DeltaRelation &&other)
 {
-    if(start!=nullptr)
-    {
-        delete start;
-    }
-    if(end!=nullptr)
-    {
-        delete end;
-    }
+    start=other.start;
+    end=other.end;
+    label=other.label;
+    other.start=nullptr;
+    other.end=nullptr;
 }
 DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
 {
@@ -42,7 +39,33 @@ DeltaRelation& DeltaRelation:: operator=(const DeltaRelation &other)
     
 
 }
-char DeltaRelation:: getLabel()const
+DeltaRelation& DeltaRelation::operator=(DeltaRelation &&other)
+{
+    if(this==&other)
+    {
+        return *this;
+    }
+    delete start;
+    delete end;
+    start=other.start;
+    end=other.end;
+    label=other.label;
+    other.start=nullptr;
+    other.end=nullptr;
+    return *this;
+}
+DeltaRelation::~DeltaRelation()
+{
+    if(start!=nullptr)
+    {
+        delete start;
+    }
+    if(end!=nullptr)
+    {
+        delete end;
+    }
+}
+char DeltaRelation::getLabel() const
 {
     return label;
 }

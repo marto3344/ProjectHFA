@@ -16,12 +16,43 @@ Automata::Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges){
 Automata::Automata(const Automata &other)
 {
     id=other.id;
+    copy(other);
+    CalculateStates();
+}
+Automata& Automata::operator=(const Automata &other)
+{
+    if(this==&other)
+    {
+        return *this;
+    }
+    freeMemory();
+    copy(other);
+    CalculateStates();
+    return *this;
+}
+Automata::Automata(Automata &&other)
+{
+   id=other.id;
+   for (size_t i = 0; i < other.edges.size(); i++)
+   {
+      edges[i]=other.edges[i];
+      other.edges[i]=nullptr;
+   }
+   
+
+}
+Automata& Automata::operator=(Automata &&other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+    id = other.id;
     for (size_t i = 0; i < other.edges.size(); i++)
     {
-        edges.push_back(new DeltaRelation(*other.edges[i]));
+        *edges[i] = std::move(*other.edges[i]);
     }
-    
-    CalculateStates();
+    return *this;
 }
 Automata::~Automata()
 {
@@ -75,14 +106,6 @@ void Automata::Print() const
     result.edges=std::move(resultEdges);
     result.CalculateStates();
     return result;
- }
- void Automata::freeMemory()
- {
-    for (DeltaRelation* delta:edges)
-    {
-        delete delta;
-    }
-    
  }
  void Automata::CalculateStates()
  {
@@ -591,3 +614,22 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     }
      return Automata();
  }
+ void Automata::freeMemory()
+ {
+    for (DeltaRelation* delta:edges)
+    {
+        delete delta;
+    }
+    
+ }
+ void Automata::copy(const Automata &other)
+ {
+    id=other.id;
+    for (size_t i = 0; i < other.edges.size(); i++)
+    {
+      edges.push_back(new DeltaRelation(*other.edges[i]));
+    }
+    
+ }
+
+

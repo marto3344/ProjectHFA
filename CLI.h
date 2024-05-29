@@ -31,6 +31,9 @@ class CommandInterface{
   void List()const;
   void Save(const std::string&filename)const;
   void PrintAutomata(unsigned const id)const;
+  void Union(unsigned const id1,unsigned const id2);
+  void Concat(unsigned const id1,unsigned const id2);
+  void Un(unsigned const id);
   public:
   void Deserialize(std::istream&);
   void Draw(unsigned)const;

@@ -8,6 +8,9 @@ class Automata{
     Automata()=default;
     Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges);
     Automata(const Automata&other);
+    Automata& operator=(const Automata&other);
+    Automata(Automata &&other);
+    Automata& operator=(Automata &&other);
     ~Automata();
 
     const std::vector<State*> getStates();
@@ -51,5 +54,6 @@ class Automata{
     Automata getUniqueStates(const Automata&other)const;
 
     void freeMemory();
+    void copy(const Automata &other);
     
 };
