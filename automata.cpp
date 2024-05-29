@@ -33,11 +33,7 @@ Automata& Automata::operator=(const Automata &other)
 Automata::Automata(Automata &&other)
 {
    id=other.id;
-   for (size_t i = 0; i < other.edges.size(); i++)
-   {
-      edges[i]=other.edges[i];
-      other.edges[i]=nullptr;
-   }
+   edges=std::move(other.edges);
    
 
 }
@@ -48,10 +44,7 @@ Automata& Automata::operator=(Automata &&other)
         return *this;
     }
     id = other.id;
-    for (size_t i = 0; i < other.edges.size(); i++)
-    {
-        *edges[i] = std::move(*other.edges[i]);
-    }
+    edges=std::move(other.edges);
     return *this;
 }
 Automata::~Automata()
