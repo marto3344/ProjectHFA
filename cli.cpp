@@ -322,6 +322,15 @@ void CommandInterface::Run()
     }
     else if(GetCommand(inputStr)=="reg")
     {
+      if(!fileIsOpened)
+      {
+        std::cout<<NoOpenedFileMessage;
+      }
+      else{
+         std::string regex=inputStr.substr(4,inputStr.length()-4);
+         std::cout<<regex;
+         CreateByRegex(regex);
+      }
       
     }
     else if(GetCommand(inputStr)=="draw")
@@ -538,6 +547,30 @@ void CommandInterface::Un(unsigned const id)
   result->setId(automatas.size());
   automatas.push_back(result);
   std::cout<<"Created a L+ of "<<id<<" with id: "<<result->getId()<<'\n';
+}
+
+void CommandInterface::CreateByRegex(const std::string &regex)
+{
+  Automata* automata= new Automata();
+  try
+  {
+    *automata=Automata::createAutomataByRegex(regex);
+    automata->setId(automatas.size());
+    automatas.push_back(automata);
+    std::cout<<"Created automata by regulat expression with id: "<<automata->getId()<<'\n';
+
+  }
+  catch(const char* str)
+  {
+    delete automata;
+    std::cout<<str;
+  }
+  catch(const std::exception& e)
+  {
+    delete automata;
+    std::cout<<"Something went wrong! Please try again!\n";
+  }
+  
 }
 
 void CommandInterface::Deserialize(std::istream& in)

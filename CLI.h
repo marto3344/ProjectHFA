@@ -38,7 +38,7 @@ class CommandInterface{
   void Union(unsigned const id1,unsigned const id2);
   void Concat(unsigned const id1,unsigned const id2);
   void Un(unsigned const id);
-  public:
+  void CreateByRegex(const std::string &regex);
   void Deserialize(std::istream&);
   void Draw(unsigned)const;
   static const std::string GetCommand(const std::string);
