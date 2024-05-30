@@ -47,22 +47,22 @@ void CommandInterface::Run()
     {
       Help();
     }
-    else if(GetCommand(inputStr)=="open")
+    else if (GetCommand(inputStr) == "open")
     {
-       std::string filename;
-      for (size_t i = 5; i < inputStr.size(); i++)
-      {
-          filename+=inputStr[i];
-      }
       try
       {
-        if(!fileIsOpened)
+        if (!fileIsOpened)
         {
-         Open(filename);
+          std::string filename;
+          for (size_t i = 5; i < inputStr.size(); i++)
+          {
+            filename += inputStr[i];
+          }
+          Open(filename);
         }
         else
         {
-         std::cout<<"File "<<openedfile<<"is already opened! Please close it before opening another\n";
+          std::cout << "File " << openedfile << "is already opened! Please close it before opening another\n";
         }
       }
       catch(const char* str)
@@ -73,7 +73,6 @@ void CommandInterface::Run()
       {
         std::cout<<"Something went wrong! Please try again!\n";
       }
-      
     }
     else if(GetCommand(inputStr)=="recognize")
     {
@@ -363,8 +362,18 @@ void CommandInterface::Run()
 
 void CommandInterface::Open(const std::string &filename)
 {
-        std::fstream in;
-        in.open(filename,std::ios::in);
+        std::ifstream in;
+        in.open(filename);
+        if(!in.good())
+        {
+          std::ofstream out(filename);
+          if(out.is_open())
+          {
+            out.close();
+          }
+          else throw "coudn't open the file";
+        }
+        in.open(filename);
         if (in.is_open())
         {
           Deserialize(in);
