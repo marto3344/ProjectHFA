@@ -71,7 +71,7 @@ void CommandInterface::Run()
       }
       catch(const std::exception& e)
       {
-        std::cerr << e.what() << '\n';
+        std::cout<<"Something went wrong! Please try again!\n";
       }
       
     }
@@ -142,31 +142,33 @@ void CommandInterface::Run()
       }
       else
       {
-        std::string automataId;
-        for (size_t i = 5; i < inputStr.size(); i++)//TODO:Parse filename
+        try
         {
-          automataId += inputStr[i];
+          std::string automataId;
+          for (size_t i = 5; i < inputStr.size(); i++) // TODO:Parse filename
+          {
+            if(inputStr[i]==' ')
+            {
+              break;
+            }
+            automataId += inputStr[i];
+          }
+          size_t id = std::stoi(automataId);
+          if (id < 0 || id >= automatas.size())
+          {
+            std::cout << "No automata with this id! Type list to see all available automatas!\n";
+          }
+          else
+          {
+            std::string fileName=inputStr.substr(automataId.length()+6,inputStr.length()-automataId.length()-5);
+            automatas[id]->Save(fileName);
+            std::cout << "Successfully saved automata with id " << id << " into " << fileName << '\n';
+          }
         }
-        size_t id=std::stoi(automataId);
-        if(id<0||id>=automatas.size())
+        catch (const std::exception &e)
         {
-          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
+          std::cout<<"Something went wrong! Please try again!\n";
         }
-        else
-        {
-           try
-           {
-            automatas[id]->Save(openedfile);
-            std::cout<<"Successfully saved automata with id "<<id<<" into "<<openedfile<<'\n';
-           }
-           catch(const std::exception& e)
-           {
-            std::cerr << e.what() << '\n';
-           }
-           
-          
-        }
-        
       }
     }
     else if (inputStr == "save")
@@ -187,7 +189,7 @@ void CommandInterface::Run()
         }
         catch (const std::exception &e)
         {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
         }
       }
     }
@@ -202,7 +204,7 @@ void CommandInterface::Run()
       }
       catch(const std::exception& e)
       {
-        std::cerr << e.what() << '\n';
+        std::cout<<"Something went wrong! Please try again!\n";
       }
       
 
@@ -234,7 +236,7 @@ void CommandInterface::Run()
         }
         catch(const std::exception& e)
         {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
         }
         
       }
@@ -266,7 +268,7 @@ void CommandInterface::Run()
         }
         catch (const std::exception &e)
         {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
         }
       }
     }
@@ -295,7 +297,7 @@ void CommandInterface::Run()
         }
         catch (const std::exception &e)
         {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
         }
       }
     }
@@ -313,7 +315,7 @@ void CommandInterface::Run()
          }
          catch(const std::exception& e)
          {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
          }
          
       }
@@ -337,7 +339,7 @@ void CommandInterface::Run()
          }
          catch(const std::exception& e)
          {
-          std::cerr << e.what() << '\n';
+          std::cout<<"Something went wrong! Please try again!\n";
          }
          
       }

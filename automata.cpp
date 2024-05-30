@@ -371,12 +371,13 @@ bool Automata:: ContainsStateName(const std::string name)const
      return false;
  }
 
- void Automata::draw() const
+ void Automata::draw()
  {
    std::ofstream out;
    out.open("Automata.dot",std::ios::app);
    if(out.is_open())
    {
+    CalculateStates();
     std::vector<State*>initialStates=getInitialStates();
     std::vector<State*>finialStates=getFinalStates();
      out<<"digraph Automata_"<<id<<"{\n";
@@ -385,7 +386,7 @@ bool Automata:: ContainsStateName(const std::string name)const
            out<<" hiddenNode[shape=none,label=\"\"]"<<"\n";
            out<<" hiddenNode->"<<initialStates[i]->getStateName()<<"[arrowtail=none]"<<"\n";
      }
-     for (size_t i = 0; i < finialStates.size(); i++)
+     for (size_t i = 0; i < finialStates.size(); i++)//Format it as double circle if state is final;
      {
         out<<" "<<finialStates[i]->getStateName()<<"[shape=doublecircle]\n";
      }

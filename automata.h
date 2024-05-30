@@ -22,7 +22,7 @@ class Automata{
     bool Empty() const;
     bool Finite();
     bool Deterministic()const;
-    void draw()const;
+    void draw();
     void setId(unsigned);
     bool Recognize(std::string word);
     Automata Union(const Automata &other)const;

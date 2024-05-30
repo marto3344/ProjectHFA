@@ -29,6 +29,9 @@ class CommandInterface{
   void Exit();
   void Help()const;
   void List()const;
+  void Empty(unsigned const id)const;
+  void Finite(unsigned const id)const;
+  void Recognize(unsigned const id, const std::string& word)const;
   void Save(const std::string&filename)const;
   void PrintAutomata(unsigned const id)const;
   void Union(unsigned const id1,unsigned const id2);
