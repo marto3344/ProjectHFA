@@ -87,11 +87,11 @@ void Automata::Print() const
         {
             resultEnd=resultEnd+"0";
         }
-        State * resultStartState=new State(*other.edges[i]->getStart());
-        resultStartState->setStateName(resultStart);
-        State* resultEndState=new State(*other.edges[i]->getEnd());
-        resultEndState->setStateName(resultEnd);
-        resultEdges[edges.size()+i]=new DeltaRelation(*resultStartState,*resultEndState,other.edges[i]->getLabel());    
+        State resultStartState= State(*other.edges[i]->getStart());
+        resultStartState.setStateName(resultStart);
+        State resultEndState=State(*other.edges[i]->getEnd());
+        resultEndState.setStateName(resultEnd);
+        resultEdges[edges.size()+i]=new DeltaRelation(resultStartState,resultEndState,other.edges[i]->getLabel());    
     }
    
     Automata result;
@@ -154,35 +154,38 @@ bool Automata:: ContainsStateName(const std::string name)const
     result.CalculateStates();
     return result;   
  }
- Automata Automata:: Un()const
+ Automata Automata::Un() const
  {
-    Automata result=Automata(*this);
-    for (size_t i = 0; i < states.size(); i++)
-    {
-        if (result.states[i]->isFinal())
-        {
-           for (size_t j = 0; j < states.size(); j++)
-           {
-              if (result.states[j]->isInitial())
-              {
-                result.edges.push_back(new DeltaRelation(*result.states[i],*result.states[j],'~'));
-              }
-              
-           }
-           
-        }
-        
-    }
-    result.CalculateStates();
-    return result;   
+     Automata result = Automata(*this);
+     for (size_t i = 0; i < states.size(); i++)
+     {
+         if (result.states[i]->isFinal())
+         {
+             for (size_t j = 0; j < states.size(); j++)
+             {
+                 if (result.states[j]->isInitial())
+                 {
+                     result.edges.push_back(new DeltaRelation(*result.states[i], *result.states[j], '~'));
+                 }
+             }
+         }
+     }
+     result.CalculateStates();
+     return result;
  }
+
  Automata Automata::KleeneStar() const
  {
-    //Automata result;
-    //result=this->Un();
-     State e("e",1,1);//State that recognizes epsilone
-     //result.states.push_back(&e);
-     return this->Un();
+    Automata result(this->Un());
+    std::string epsiloneStateName="e";//We need a state that recognizes empty word
+    while (result.ContainsStateName(epsiloneStateName))
+    {
+        epsiloneStateName+='e';
+    }
+    State epsiloneState = State(epsiloneStateName,1,1);
+    result.edges.push_back(new DeltaRelation(epsiloneState,epsiloneState,'~'));
+    result.CalculateStates();
+    return result;
  }
  const std::vector<State *> Automata::FindConnectedStated(const State &start, const std::vector<State *> &visited) const
  {
