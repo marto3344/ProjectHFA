@@ -30,6 +30,7 @@ class CommandInterface{
   void Help()const;
   void List()const;
   void Empty(unsigned const id)const;
+  void Deterministic(unsigned id)const;
   void Finite(unsigned const id)const;
   void Recognize(unsigned const id, const std::string& word)const;
   void Save(const std::string&filename)const;

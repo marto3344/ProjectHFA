@@ -86,7 +86,7 @@ void CommandInterface::Run()
       }
 
     }
-    else if(GetCommand(inputStr)=="deterministic")
+    else if (GetCommand(inputStr) == "deterministic")
     {
       if (!fileIsOpened)
       {
@@ -94,19 +94,19 @@ void CommandInterface::Run()
       }
       else
       {
-        std::string automataId;
-        for (size_t i = 14; i < inputStr.size(); i++)
+        try
         {
-          automataId += inputStr[i];
+          std::string automataId;
+          for (size_t i = 14; i < inputStr.size(); i++)
+          {
+            automataId += inputStr[i];
+          }
+          size_t id = std::stoi(automataId);
+          Deterministic(id);
         }
-        size_t id=std::stoi(automataId);
-        if(id<0||id>=automatas.size())
+        catch (const std::exception &e)
         {
-          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
-        }
-        else
-        {
-         std::cout << std::boolalpha << automatas[id]->Deterministic() << '\n';
+          std::cout << "Something went wrong! Please try again!\n";
         }
       }
     }
@@ -118,19 +118,19 @@ void CommandInterface::Run()
       }
       else
       {
-        std::string automataId;
-        for (size_t i = 5; i < inputStr.size(); i++)
+        try
         {
-          automataId += inputStr[i];
+          std::string automataId;
+          for (size_t i = 5; i < inputStr.size(); i++)
+          {
+            automataId += inputStr[i];
+          }
+          size_t id = std::stoi(automataId);
+          Empty(id);
         }
-        size_t id=std::stoi(automataId);
-        if(id<0||id>=automatas.size())
+        catch (const std::exception &e)
         {
-          std::cout<<"No automata with this id! Type list to see all available automatas!\n";
-        }
-        else
-        {
-         std::cout << std::boolalpha << automatas[id]->Empty() << '\n';
+          std::cout << "Something went wrong! Please try again!\n";
         }
       }
     }
@@ -438,6 +438,27 @@ void CommandInterface::List() const
     std::cout<<" read automatas with id from 0 to "<<automatas.size()-1;
    }
    std::cout<<'\n';
+}
+
+void CommandInterface::Empty(unsigned const id) const
+{
+  if (id < 0 || id >= automatas.size())
+  {
+    std::cout << "No automata with this id! Type list to see all available automatas!\n";
+    return;
+  }
+  std::cout << std::boolalpha << automatas[id]->Empty() << '\n';
+}
+
+void CommandInterface::Deterministic(unsigned id) const
+{
+  if (id < 0 || id >= automatas.size())
+  {
+    std::cout << "No automata with this id! Type list to see all available automatas!\n";
+    return;
+  }
+
+  std::cout << std::boolalpha << automatas[id]->Deterministic() << '\n';
 }
 
 void CommandInterface::Save(const std::string& fileName) const
