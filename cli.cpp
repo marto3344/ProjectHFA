@@ -371,9 +371,12 @@ void CommandInterface::Open(const std::string &filename)
           {
             out.close();
           }
-          else throw "coudn't open the file";
+          else 
+          {
+           throw "coudn't open the file";
+          } 
+          in.open(filename);
         }
-        in.open(filename);
         if (in.is_open())
         {
           Deserialize(in);
