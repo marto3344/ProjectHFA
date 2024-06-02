@@ -1,6 +1,5 @@
 #include<iostream>
 #include<fstream>
-#include<exception>
 #include"automata.h"
 #include"utilities.h"
 Automata::Automata(unsigned _id,const std::vector<DeltaRelation*>& _edges){
@@ -269,7 +268,7 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
       hasCycle=0;
       visitedStates.push_back(state);
-      if(HasSuccCyclePath(*state,visitedStates,hasCycle))//If we find successfull path that has cycle->language is not finite
+      if(HasSuccCyclePath(*state,visitedStates))//If we find successfull path that has cycle->language is not finite
       {
         return false;
       }
@@ -332,47 +331,42 @@ bool Automata:: ContainsStateName(const std::string name)const
      return false;
  }
 
- bool Automata::HasSuccCyclePath(const State &start, std::vector<State *> visitedStates, bool hasCycle) const
+ bool Automata::HasSuccCyclePath(const State &start, std::vector<State *>& visitedStates) const
  {
-    // if (StateFormsCycle(start,visitedStates))
-    // {
-      
-    //   hasCycle=1;
-
-    // }
-    if (FindConnectedStated(start,visitedStates).empty())
+    std::vector<State*>visitedPath;
+    if(!ContainsState(start,visitedPath))
     {
-        std::cout<<"Return here";
-        return hasCycle;
+        visitedPath.push_back(new State(start));
     }
     
-    for (DeltaRelation* delta:edges)
+    for (DeltaRelation*delta:edges)
     {
-        if (start==*delta->getStart()&&!ContainsState(*delta->getEnd(),visitedStates))
+        bool containsState;
+        containsState=ContainsState(*delta->getEnd(),visitedStates);
+        if(start==*delta->getStart()&&!containsState)
         {
-            for (State* state:visitedStates)
-            {
-                std::cout<<"visited: "<<state->getStateName()<<'\n';
-            }
-            
-            std::cout<<"state: "<<start.getStateName()<<"\n";
             visitedStates.push_back(delta->getEnd());
-           
-            
-            if(StateFormsCycle(*delta->getEnd(),visitedStates))
+            unsigned cycleStart=0;
+            if(StateFormsCycle(*delta->getEnd(),visitedPath,cycleStart))
             {
-                if(delta->getEnd()->isFinal())
-                {
-                    hasCycle=true;
-                    return true;
-                }
-                hasCycle=true;
+                  for (size_t i = cycleStart; i < visitedPath.size(); i++)
+                  {
+                    if(visitedPath[i]->isFinal())
+                    {
+                        
+                        return true;
+                    }
+                  }
+                  
             }
-            return HasSuccCyclePath(*delta->getEnd(),visitedStates,hasCycle);
         }
         
     }
-     return false;
+    for (size_t i = 0; i < visitedPath.size(); i++)
+    {
+        delete visitedPath[i];
+    }
+    return false;
  }
 
  void Automata::draw()
@@ -514,29 +508,18 @@ bool Automata:: ContainsStateName(const std::string name)const
       }
       return true;
 }
-bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates)const
+bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,unsigned& cycleStart)const
 {
-    for (DeltaRelation*delta:edges)
+    for (size_t i=0;i<edges.size();++i)
     {
-       if (state==*delta->getStart()&&ContainsState(*delta->getEnd(),visitedStates));
+       if (state==*edges[i]->getStart()&&ContainsState(*edges[i]->getEnd(),visitedStates));
        {
+         cycleStart=i;
          return true;
        }
     }
     return false;
-
 }
-bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelation *> &visitedEdges) const
- {
-    for (DeltaRelation* deltaRel:visitedEdges)
-    {
-        if (delta==deltaRel)
-        {
-            return true;
-        }   
-    }
-     return false;
- }
 
  bool Automata::WordIsValid(const std::string& word)
  {

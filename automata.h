@@ -36,6 +36,7 @@ class Automata{
     static Automata createAutomataByRegex(const std::string &regex);
     static bool ExpressionIsValid(const std::string &expression);
     void Determinize();
+
     private:
     unsigned int id;
     std::vector<State*>states;
@@ -46,12 +47,11 @@ class Automata{
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
     bool static ContainsState(const State& state,const std::vector<State*>&vec);
-    bool HasSuccCyclePath(const State& start,std::vector<State*> visitedStates,bool hasCycle)const;
-    bool StateFormsCycle(const State& state,const std::vector<State*>&visitedStates)const;
-    bool EdgeIsVisited(const DeltaRelation*,std::vector<DeltaRelation*>&visitedEdges)const;
+    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates)const;
+    bool StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,unsigned &cycleStart)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
-    
+
     static bool WordIsValid(const std::string& word);
     static bool IsOperator(const char c);
     static bool IsBracket(const char c);
@@ -63,7 +63,7 @@ class Automata{
     State ConvertClosureToState(const std::vector<State*>&closure);
     std::vector<State*> EpsiloneClosure(std::vector<State*>& states);
     void FindConnWithEps(State* state, std::vector<State*>& states);
-
+    bool HasPathTo()const;
     static bool VecContainsState(const State*, const std::vector<State*>& states);
     void freeMemory();
     void copy(const Automata &other);

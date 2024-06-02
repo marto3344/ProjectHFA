@@ -52,7 +52,7 @@ TEST_SUITE("Testing logical methods"){
     edges.push_back(&rel2);
     edges.push_back(&rel3);
     Automata a(0,edges);
-    //CHECK(a.Finite()==true);
+    CHECK(a.Finite()==true);
   }
   TEST_CASE("test regex balanced brackets validation")
   {
@@ -85,6 +85,6 @@ TEST_SUITE("Testing logical methods"){
 
 int main(){
   doctest::Context().run();
-  CommandInterface& Interface=CommandInterface::Initialize();
-  Interface.Run();
+  //CommandInterface& Interface=CommandInterface::Initialize();
+  //Interface.Run();
  }
