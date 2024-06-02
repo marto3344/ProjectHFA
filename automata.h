@@ -34,6 +34,7 @@ class Automata{
     
     static Automata createAutomataByWord(const std::string &word);
     static Automata createAutomataByRegex(const std::string &regex);
+    static bool ExpressionIsValid(const std::string &expression);
 
     private:
     unsigned int id;
@@ -51,8 +52,20 @@ class Automata{
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
     static bool WordIsValid(const std::string& word);
-    Automata getUniqueStates(const Automata&other)const;
+    static bool IsOperator(const char c);
+    static bool IsBracket(const char c);
+    static bool IsFromAlphabet(const char c);
+    static bool DeltaContainsState(const std::vector<DeltaRelation*>&deltaRel, const std::string&stateName);
+    public:
+    Automata getUniqueStates(const Automata &other) const;
+    void RemoveEpsilones();
+    void EpsiloneClosure(State* state,std::vector<State*>& states);
+    void FindConnWithEps(State* state, std::vector<State*>& states);
+    std::vector<State*> FindStatesThatHaveEps()const;
 
+    static bool VecContainsState(const State*, const std::vector<State*>& states);
+    static bool vecHasFinal(const std::vector<State*>states);
+    static bool vecHasInitial(const std::vector<State*>states);
     void freeMemory();
     void copy(const Automata &other);
     

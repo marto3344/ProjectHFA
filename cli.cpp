@@ -327,7 +327,6 @@ void CommandInterface::Run()
       }
       else{
          std::string regex=inputStr.substr(4,inputStr.length()-4);
-         std::cout<<regex;
          CreateByRegex(regex);
       }
       
@@ -563,6 +562,11 @@ void CommandInterface::Un(unsigned const id)
 
 void CommandInterface::CreateByRegex(const std::string &regex)
 {
+  if(!Automata::ExpressionIsValid(regex))
+  {
+    std::cout<<"Error!Invalid expression\n";
+    return;
+  }
   Automata* automata= new Automata();
   try
   {

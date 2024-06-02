@@ -81,17 +81,17 @@ void Automata::Print() const
         std::string resultEnd=other.edges[i]->getEnd()->getStateName();
         while (other.ContainsStateName(resultStart)||this->ContainsStateName(resultStart))
         {
-            resultStart=resultStart+"0";
+            resultStart+='0';
         }
         while (other.ContainsStateName(resultEnd)||this->ContainsStateName(resultEnd))
         {
-            resultEnd=resultEnd+"0";
+            resultEnd+='0';
         }
         State resultStartState= State(*other.edges[i]->getStart());
         resultStartState.setStateName(resultStart);
         State resultEndState=State(*other.edges[i]->getEnd());
         resultEndState.setStateName(resultEnd);
-        resultEdges[edges.size()+i]=new DeltaRelation(resultStartState,resultEndState,other.edges[i]->getLabel());    
+        resultEdges[edges.size()+i]=new DeltaRelation(resultStartState,resultEndState,other.edges[i]->getLabel());     
     }
    
     Automata result;
@@ -100,6 +100,7 @@ void Automata::Print() const
     result.CalculateStates();
     return result;
  }
+
  void Automata::CalculateStates()
  {
      for (DeltaRelation* delta : edges)
@@ -535,13 +536,74 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
  {
     for (size_t i = 0; i < word.size(); i++)
     {
-       if((word[i]<'a'||word[i]>'z')&&(word[i]<'0'||word[i]>'9'))
+       if(!IsFromAlphabet(word[i]))
        {
           return false;
        }
     }
     
     return true;
+ }
+ bool Automata::IsOperator(const char c)
+ {
+   return (c=='.'||c=='*'||c=='+');
+ }
+ bool Automata::IsBracket(const char c)
+ {
+     return c=='('||c==')';
+ }
+ bool Automata::IsFromAlphabet(const char c)
+ {
+     return (c>='a'&&c<='z')||(c>='0'&&c<='9')||(c=='~');
+ }
+ bool Automata::DeltaContainsState(const std::vector<DeltaRelation *> &deltaRel, const std::string &stateName)
+ {
+     for (DeltaRelation* delta:deltaRel)
+     {
+        if(delta->getStart()->getStateName()==stateName||delta->getEnd()->getStateName()==stateName)
+        {
+            return true;
+        }
+     } 
+     return false;
+ }
+ bool Automata::ExpressionIsValid(const std::string &expression) // Recursively validate if regulatr expression matches the format
+ {
+    unsigned int bracketsCount =0;
+    std::string expSubstr;
+    expSubstr=expression.substr(1,expression.length()-2);
+    if(WordIsValid(expSubstr))
+    {
+        return true;
+    }
+    for (size_t i = 0; i < expSubstr.length(); i++)
+    {
+
+        if(!IsBracket(expSubstr[i])&&!IsFromAlphabet(expSubstr[i])&&!IsOperator(expSubstr[i]));
+        {
+            return false;
+        }
+        if(expSubstr[i]=='(')
+        {
+         ++bracketsCount;
+        }
+        if(expSubstr[i]==')')
+        {
+          -- bracketsCount;
+        }
+        if(bracketsCount==0)
+        {
+            if(expSubstr[i]=='*')
+            {
+               return ExpressionIsValid(expSubstr.substr(0,i));
+            }
+            if((expSubstr[i]=='.')||(expSubstr[i]=='+'))
+            {
+               return ExpressionIsValid(expSubstr.substr(0,i))&&ExpressionIsValid(expSubstr.substr(i+1,expSubstr.length()-i-1));
+            }
+        }    
+    }
+    return false;
  }
  Automata Automata::createAutomataByWord(const std::string &word)
  {
@@ -566,7 +628,6 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
 
  Automata Automata::createAutomataByRegex(const std::string &regex)//The idea about recursive tree parsing is from seminar
  {
-    //ValidateRegex
     std::string regxWithoutBrackets=regex.substr(1,regex.size()-2);
     unsigned bracketsCount=0;
     size_t strLen=regxWithoutBrackets.size();
@@ -616,5 +677,121 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     }
     
  }
+ 
+ void Automata::RemoveEpsilones() 
+ {
+    std::vector<State*>epsStates=FindStatesThatHaveEps();
+    std::vector<State*>states;
+    for (State* state:epsStates)
+    {
+        EpsiloneClosure(state,states);
+    }    
+ }
+ void Automata::EpsiloneClosure(State* state,std::vector<State*>&states)
+ {
+    if(!VecContainsState(state,states))
+    {
+        states.push_back(state);
+        FindConnWithEps(state,states);
+    }
+    else{//if the states vector contains state that means we have already made epsilone closure in this state
+        return;
+    }
+    std::string stateName;
+    for (State* state:states)//Calculating new state name
+    {
+        stateName+=state->getStateName();
+    }
+    while (ContainsStateName(stateName))
+    {
+        stateName+='0';
+    }
+    State s1(stateName,vecHasFinal(states),vecHasInitial(states));
+    std::vector<DeltaRelation*>newEdges;
+    for (DeltaRelation *delta : edges) // Calculate new DeltaRelation
+    {
+        if (!VecContainsState(delta->getStart(), states) && !VecContainsState(delta->getEnd(), states)) // if the relation is not
+        {                                                                                               // from the current e-closure we add the relation
+            newEdges.push_back(delta);
+        }
+        if (VecContainsState(delta->getStart(),states));
+        {
+           if(VecContainsState(delta->getEnd(),states)&&delta->getLabel()!='~')//Check if we have loop
+           { 
+             newEdges.push_back(new DeltaRelation(s1,s1,delta->getLabel()));
+           }
+           else if(delta->getLabel()!='~'){
+             newEdges.push_back(new DeltaRelation(s1,*delta->getEnd(),delta->getLabel()));
+           }
+        }
+    }
+    freeMemory();
+    this->edges=std::move(newEdges);
+    this->states.clear();
+    CalculateStates();
+   
+ }
 
+ void Automata::FindConnWithEps(State *state, std::vector<State*>&states)
+ {
+    for (DeltaRelation*delta:edges)
+    {
+        if(*state==*delta->getStart()&&delta->getLabel()=='~'&&!VecContainsState(delta->getEnd(),states))//&& states ne sudurja end
+        {
+           states.push_back(delta->getEnd());
+           FindConnWithEps(delta->getEnd(),states);
+        }
+    }
+    
+    
+ }
 
+ std::vector<State *> Automata::FindStatesThatHaveEps() const
+ {
+    std::vector<State*>result;
+    for (DeltaRelation*delta:edges)
+    {
+        if(delta->getLabel()=='~')
+        {
+            result.push_back(delta->getStart());
+        }
+    }
+    return result;
+ }
+
+ bool Automata::VecContainsState(const State * state, const std::vector<State *> &states)
+ {
+     for (State* vecState:states)
+     {
+        if(*state==*vecState)
+        {
+            return true;
+        }
+     }
+     
+     return false;
+ }
+
+ bool Automata::vecHasFinal(const std::vector<State *> states)
+ {
+    for (State*state:states)
+    {
+        if(state->isFinal())
+        {
+            return true;
+        }
+    }
+    return false;
+ }
+
+ bool Automata::vecHasInitial(const std::vector<State *> states)
+ {
+    for (State* state:states)
+    {
+        if(state->isInitial())
+        {
+            return true;
+        }
+    }
+    return false;
+ }
