@@ -678,58 +678,96 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     
  }
  
- void Automata::RemoveEpsilones() 
+ void Automata::Determinize()
  {
-    std::vector<State*>epsStates=FindStatesThatHaveEps();
-    std::vector<State*>states;
-    for (State* state:epsStates)
+    const char alphabet[]="abcdefghijklmnopqrstuvwxyz0123456789";
+    const size_t ALPHABET_SIZE=36;
+    std::vector<State*>initialStates=getInitialStates();
+    std::vector<DeltaRelation*>resultEdges;
+    std::vector<State*>resultStates;
+    std::vector<std::vector<State*>*>statesQueue;
+    std::vector<State*> initialClosure=EpsiloneClosure(initialStates);
+    
+    State initialState=ConvertClosureToState(initialClosure);
+    initialState.setInitial(true);
+    resultStates.push_back(&initialState);
+    State errorState("I'm error",0,0);
+    
+    statesQueue.push_back(&initialClosure);
+
+    while (!statesQueue.empty())
     {
-        EpsiloneClosure(state,states);
-    }    
+      for (size_t i = 0; i < ALPHABET_SIZE; i++)
+      {
+        
+       std::vector<State*>connectedStates=ConnectedStates(*statesQueue[0],alphabet[i]);
+       if(!connectedStates.empty())
+       {
+          std::vector<State*>epsClosure=EpsiloneClosure(connectedStates);
+          State startState=ConvertClosureToState(*statesQueue[0]);
+          State endState=ConvertClosureToState(epsClosure);
+
+          resultEdges.push_back(new DeltaRelation(startState,endState,alphabet[i]));
+
+          if(!VecContainsState(&endState,resultStates))
+          {
+            statesQueue.push_back(&epsClosure);
+          }
+       }
+       else
+       {
+          State startState=ConvertClosureToState(*statesQueue[0]);
+          resultEdges.push_back(new DeltaRelation(startState,errorState,alphabet[i]));
+       }
+      }   
+      statesQueue.erase(statesQueue.begin());//Pop the first element
+    }
+   freeMemory();
+   CalculateStates();
+   this->edges=std::move(resultEdges);
+
  }
- void Automata::EpsiloneClosure(State* state,std::vector<State*>&states)
+
+ std::vector<State *> Automata::ConnectedStates(std::vector<State *> &states, const char label)
  {
-    if(!VecContainsState(state,states))
+    std::vector<State*>result;
+    for (DeltaRelation*delta:edges)
     {
-        states.push_back(state);
-        FindConnWithEps(state,states);
-    }
-    else{//if the states vector contains state that means we have already made epsilone closure in this state
-        return;
-    }
-    std::string stateName;
-    for (State* state:states)//Calculating new state name
-    {
-        stateName+=state->getStateName();
-    }
-    while (ContainsStateName(stateName))
-    {
-        stateName+='0';
-    }
-    State s1(stateName,vecHasFinal(states),vecHasInitial(states));
-    std::vector<DeltaRelation*>newEdges;
-    for (DeltaRelation *delta : edges) // Calculate new DeltaRelation
-    {
-        if (!VecContainsState(delta->getStart(), states) && !VecContainsState(delta->getEnd(), states)) // if the relation is not
-        {                                                                                               // from the current e-closure we add the relation
-            newEdges.push_back(delta);
-        }
-        if (VecContainsState(delta->getStart(),states));
+        for (State* state:states)
         {
-           if(VecContainsState(delta->getEnd(),states)&&delta->getLabel()!='~')//Check if we have loop
-           { 
-             newEdges.push_back(new DeltaRelation(s1,s1,delta->getLabel()));
-           }
-           else if(delta->getLabel()!='~'){
-             newEdges.push_back(new DeltaRelation(s1,*delta->getEnd(),delta->getLabel()));
-           }
-        }
+            if (*state==*delta->getStart()&&delta->getLabel()==label)
+            {
+                result.push_back(delta->getEnd());
+            }    
+        }  
+    } 
+    return result;
+ }
+
+ State Automata::ConvertClosureToState(const std::vector<State *> &closure)
+ {
+    State result;
+    std::string stateName="DeT";
+    for (State*state:closure)
+    {
+       stateName+=state->getStateName();
+       if(state->isFinal())
+       {
+         result.setFinal(true);
+       }
     }
-    freeMemory();
-    this->edges=std::move(newEdges);
-    this->states.clear();
-    CalculateStates();
-   
+    result.setStateName(stateName);
+    return result;
+ }
+
+ std::vector<State*> Automata::EpsiloneClosure(std::vector<State*>&states)
+ {
+    std::vector<State*>result;
+    for (State*state:states)
+    {
+        FindConnWithEps(state,result);
+    }
+    return result;
  }
 
  void Automata::FindConnWithEps(State *state, std::vector<State*>&states)
@@ -770,28 +808,4 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
      }
      
      return false;
- }
-
- bool Automata::vecHasFinal(const std::vector<State *> states)
- {
-    for (State*state:states)
-    {
-        if(state->isFinal())
-        {
-            return true;
-        }
-    }
-    return false;
- }
-
- bool Automata::vecHasInitial(const std::vector<State *> states)
- {
-    for (State* state:states)
-    {
-        if(state->isInitial())
-        {
-            return true;
-        }
-    }
-    return false;
  }

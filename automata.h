@@ -58,14 +58,14 @@ class Automata{
     static bool DeltaContainsState(const std::vector<DeltaRelation*>&deltaRel, const std::string&stateName);
     public:
     Automata getUniqueStates(const Automata &other) const;
-    void RemoveEpsilones();
-    void EpsiloneClosure(State* state,std::vector<State*>& states);
+    void Determinize();
+    std::vector<State*> ConnectedStates(std::vector<State*>&states, const char label);
+    State ConvertClosureToState(const std::vector<State*>&closure);
+    std::vector<State*> EpsiloneClosure(std::vector<State*>& states);
     void FindConnWithEps(State* state, std::vector<State*>& states);
     std::vector<State*> FindStatesThatHaveEps()const;
 
     static bool VecContainsState(const State*, const std::vector<State*>& states);
-    static bool vecHasFinal(const std::vector<State*>states);
-    static bool vecHasInitial(const std::vector<State*>states);
     void freeMemory();
     void copy(const Automata &other);
     
