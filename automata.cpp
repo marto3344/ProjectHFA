@@ -260,7 +260,7 @@ bool Automata:: ContainsStateName(const std::string name)const
       return true;
    }
    std::vector<State*>visitedStates;
-   std::vector<DeltaRelation*>visitedEdges;
+   std::vector<State*>visitedPath;
    const std::vector<State*>initialStates=getInitialStates();
    bool hasCycle;
 
@@ -268,12 +268,12 @@ bool Automata:: ContainsStateName(const std::string name)const
    {
       hasCycle=0;
       visitedStates.push_back(state);
-      if(HasSuccCyclePath(*state,visitedStates))//If we find successfull path that has cycle->language is not finite
+      if(HasSuccCyclePath(*state,visitedStates,visitedPath))//If we find successfull path that has cycle->language is not finite
       {
         return false;
       }
       visitedStates.clear();
-      visitedEdges.clear();
+      visitedPath.clear();
    }
    
    return true;
@@ -331,13 +331,18 @@ bool Automata:: ContainsStateName(const std::string name)const
      return false;
  }
 
- bool Automata::HasSuccCyclePath(const State &start, std::vector<State *>& visitedStates) const
+ bool Automata::HasSuccCyclePath(const State &start, std::vector<State *>& visitedStates,std::vector<State*>&visitedPath) const
  {
-    std::vector<State*>visitedPath;
+    
     if(!ContainsState(start,visitedPath))
     {
         visitedPath.push_back(new State(start));
     }
+    for (State* state:visitedPath)
+    {
+        std::cout<<state->getStateName()<<'\n';
+    }
+    std::cout<<"--------\n";
     
     for (DeltaRelation*delta:edges)
     {
@@ -349,22 +354,18 @@ bool Automata:: ContainsStateName(const std::string name)const
             unsigned cycleStart=0;
             if(StateFormsCycle(*delta->getEnd(),visitedPath,cycleStart))
             {
+                 std::cout<<"\nWe go here!!!\n";
                   for (size_t i = cycleStart; i < visitedPath.size(); i++)
                   {
                     if(visitedPath[i]->isFinal())
                     {
-                        
                         return true;
                     }
                   }
                   
             }
+            return HasSuccCyclePath(*delta->getEnd(),visitedStates,visitedPath);
         }
-        
-    }
-    for (size_t i = 0; i < visitedPath.size(); i++)
-    {
-        delete visitedPath[i];
     }
     return false;
  }
@@ -472,9 +473,7 @@ bool Automata:: ContainsStateName(const std::string name)const
       const size_t alphabet_size = 36;
       size_t states_count = 1;
       states_count = states.size();
-      bool alphabet[states_count][alphabet_size] = {
-          0,
-      };
+      bool alphabet[states_count][alphabet_size] = {0,};
       for (size_t i = 0; i < states_count; ++i)
       {
           for (DeltaRelation *delta : edges)
@@ -510,11 +509,20 @@ bool Automata:: ContainsStateName(const std::string name)const
 }
 bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,unsigned& cycleStart)const
 {
+    
     for (size_t i=0;i<edges.size();++i)
     {
        if (state==*edges[i]->getStart()&&ContainsState(*edges[i]->getEnd(),visitedStates));
        {
-         cycleStart=i;
+         for (size_t j = 0; j < visitedStates.size(); j++)
+         {
+            if(state==*visitedStates[j])
+            {
+                cycleStart=j;
+                return true;
+            }
+         }
+         
          return true;
        }
     }

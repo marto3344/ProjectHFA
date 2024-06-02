@@ -47,7 +47,7 @@ class Automata{
     std::vector<State*>TraversalWithChar(const std::vector<State*>&, const char c);
     bool FindPaths(const State& start, std::vector<State*>& visitedStates)const;
     bool static ContainsState(const State& state,const std::vector<State*>&vec);
-    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates)const;
+    bool HasSuccCyclePath(const State& start,std::vector<State*>& visitedStates,std::vector<State*>& visitedPath)const;
     bool StateFormsCycle(const State& state,const std::vector<State*>&visitedStates,unsigned &cycleStart)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;

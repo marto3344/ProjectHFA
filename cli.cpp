@@ -351,6 +351,10 @@ void CommandInterface::Run()
          
       }
     }
+    else
+    {
+      std::cout<<"Unrecognized command!Please try again!\n";
+    }
    inputStr.clear();
    std::getline(std::cin,inputStr);
   }
