@@ -442,7 +442,13 @@ bool Automata:: ContainsStateName(const std::string name)const
   std::istream& operator>>(std::istream& in, Automata& automata)
   {
     size_t relationsCount;
-    in>>relationsCount;
+    std::string relCount;
+    in>>relCount;
+    if(in.bad())
+     {
+      throw "There was a unexpected error parsing the file! Check if the file is in correct format";
+     }
+     relationsCount=std::stoi(relCount);
     for (size_t i = 0; i <relationsCount; i++)
     {
         DeltaRelation* delta=new DeltaRelation();
@@ -550,7 +556,7 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
  }
  bool Automata::IsBracket(const char c)
  {
-     return c=='('||c==')';
+     return (c=='(')||(c==')');
  }
  bool Automata::IsFromAlphabet(const char c)
  {
@@ -567,43 +573,25 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
      } 
      return false;
  }
- bool Automata::ExpressionIsValid(const std::string &expression) // Recursively validate if regulatr expression matches the format
+ bool Automata::ExpressionIsValid(const std::string &expression)//Check if expression have balanced brackets
  {
-    unsigned int bracketsCount =0;
-    std::string expSubstr;
-    expSubstr=expression.substr(1,expression.length()-2);
-    if(WordIsValid(expSubstr))
+    unsigned bracketsCount=0;
+    for (size_t i=0;i<expression.size();++i)
     {
-        return true;
+        if(expression[i]=='(')
+        {
+           bracketsCount++;
+        }
+        if(expression[i]==')')
+        {
+            bracketsCount--;
+        }
     }
-    for (size_t i = 0; i < expSubstr.length(); i++)
+    if(bracketsCount!=0)
     {
-
-        if(!IsBracket(expSubstr[i])&&!IsFromAlphabet(expSubstr[i])&&!IsOperator(expSubstr[i]));
-        {
-            return false;
-        }
-        if(expSubstr[i]=='(')
-        {
-         ++bracketsCount;
-        }
-        if(expSubstr[i]==')')
-        {
-          -- bracketsCount;
-        }
-        if(bracketsCount==0)
-        {
-            if(expSubstr[i]=='*')
-            {
-               return ExpressionIsValid(expSubstr.substr(0,i));
-            }
-            if((expSubstr[i]=='.')||(expSubstr[i]=='+'))
-            {
-               return ExpressionIsValid(expSubstr.substr(0,i))&&ExpressionIsValid(expSubstr.substr(i+1,expSubstr.length()-i-1));
-            }
-        }    
+        return false;
     }
-    return false;
+    return true;
  }
  Automata Automata::createAutomataByWord(const std::string &word)
  {
@@ -643,6 +631,13 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
          bracketsCount--;
         if (bracketsCount==0)
         {
+            if(!IsOperator(regxWithoutBrackets[i])&&!IsBracket(regxWithoutBrackets[i]))
+            {
+               std::cout<<regxWithoutBrackets<<'\n';
+               std::cout<<i<<'\n';
+               std::cout<<regxWithoutBrackets[i]<<'\n';
+               throw "An error occured! Please validate regex! The valid opperators are: + * . \n";
+            }
             if(regxWithoutBrackets[i]=='*')
             {
                 return Automata::createAutomataByRegex(regxWithoutBrackets.substr(0,i)).KleeneStar();
@@ -769,8 +764,8 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
  {
     std::vector<State*>result;
     for (State*state:states)
-    {
-        FindConnWithEps(state,result);
+    {  
+     FindConnWithEps(state,result);
     }
     return result;
  }
@@ -787,19 +782,6 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     }
     
     
- }
-
- std::vector<State *> Automata::FindStatesThatHaveEps() const
- {
-    std::vector<State*>result;
-    for (DeltaRelation*delta:edges)
-    {
-        if(delta->getLabel()=='~')
-        {
-            result.push_back(delta->getStart());
-        }
-    }
-    return result;
  }
 
  bool Automata::VecContainsState(const State * state, const std::vector<State *> &states)

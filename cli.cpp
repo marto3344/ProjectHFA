@@ -598,6 +598,10 @@ void CommandInterface::Deserialize(std::istream& in)
      in>>*a;
      a->setId(automatas.size());
      automatas.push_back(a);
+     if(in.bad())
+     {
+      throw "There was a unexpected error parsing the file! Check if the file is in correct format";
+     }
    }
 }
 

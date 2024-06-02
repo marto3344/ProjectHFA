@@ -35,7 +35,7 @@ class Automata{
     static Automata createAutomataByWord(const std::string &word);
     static Automata createAutomataByRegex(const std::string &regex);
     static bool ExpressionIsValid(const std::string &expression);
-
+    void Determinize();
     private:
     unsigned int id;
     std::vector<State*>states;
@@ -51,19 +51,18 @@ class Automata{
     bool EdgeIsVisited(const DeltaRelation*,std::vector<DeltaRelation*>&visitedEdges)const;
     const std::vector<State*>getFinalStates()const;
     const std::vector<State*>getInitialStates() const;
+    
     static bool WordIsValid(const std::string& word);
     static bool IsOperator(const char c);
     static bool IsBracket(const char c);
     static bool IsFromAlphabet(const char c);
     static bool DeltaContainsState(const std::vector<DeltaRelation*>&deltaRel, const std::string&stateName);
-    public:
     Automata getUniqueStates(const Automata &other) const;
-    void Determinize();
+    
     std::vector<State*> ConnectedStates(std::vector<State*>&states, const char label);
     State ConvertClosureToState(const std::vector<State*>&closure);
     std::vector<State*> EpsiloneClosure(std::vector<State*>& states);
     void FindConnWithEps(State* state, std::vector<State*>& states);
-    std::vector<State*> FindStatesThatHaveEps()const;
 
     static bool VecContainsState(const State*, const std::vector<State*>& states);
     void freeMemory();
