@@ -74,16 +74,38 @@ void CommandInterface::Run()
         std::cout<<"Something went wrong! Please try again!\n";
       }
     }
-    else if(GetCommand(inputStr)=="recognize")
+    else if (GetCommand(inputStr) == "recognize")
     {
-      if(!fileIsOpened)
+      if (!fileIsOpened)
       {
-        std::cout<<NoOpenedFileMessage;
+        std::cout << NoOpenedFileMessage;
       }
-      else{
-
+      else
+      {
+        try
+        {
+          std::string automataId;
+          for (size_t i = 10; i < inputStr.size(); i++)
+          {
+            if (inputStr[i] == ' ')
+            {
+              break;
+            }
+            automataId += inputStr[i];
+          }
+          size_t id = std::stoi(automataId);
+          std::string word = inputStr.substr(automataId.length() + 11, inputStr.length() - automataId.length() - 11);
+          Recognize(id,word);
+        }
+        catch (const char *err)
+        {
+          std::cout << err;
+        }
+        catch (const std::exception &e)
+        {
+          std::cout << "Something went wrong! Please try again!\n";
+        }
       }
-
     }
     else if (GetCommand(inputStr) == "deterministic")
     {
@@ -133,7 +155,7 @@ void CommandInterface::Run()
         }
       }
     }
-    else if(GetCommand(inputStr)=="save"&&inputStr.size()!=4)
+    else if(GetCommand(inputStr)=="save"&&inputStr.size()!=4)//If we want to save automata in file
     {
       if (!fileIsOpened)
       {
@@ -144,7 +166,7 @@ void CommandInterface::Run()
         try
         {
           std::string automataId;
-          for (size_t i = 5; i < inputStr.size(); i++) // TODO:Parse filename
+          for (size_t i = 5; i < inputStr.size(); i++) 
           {
             if(inputStr[i]==' ')
             {
@@ -351,14 +373,10 @@ void CommandInterface::Run()
          
       }
     }
-    else
-    {
-      std::cout<<"Unrecognized command!Please try again!\n";
-    }
    inputStr.clear();
    std::getline(std::cin,inputStr);
   }
- 
+
 }
 
 
@@ -459,7 +477,14 @@ void CommandInterface::List() const
    std::cout<<"There are "<<automatas.size();
    if(automatas.size()!=0)
    {
-    std::cout<<" read automatas with id from 0 to "<<automatas.size()-1;
+     if (automatas.size()==1)
+     {
+      std::cout<<"read 1 automata with id 0"; 
+     }
+     else
+     {
+      std::cout<<" read"<<automatas.size()<<" automatas with id from 0 to "<<automatas.size()-1;
+     }
    }
    std::cout<<'\n';
 }
@@ -563,7 +588,15 @@ void CommandInterface::Un(unsigned const id)
   automatas.push_back(result);
   std::cout<<"Created a L+ of "<<id<<" with id: "<<result->getId()<<'\n';
 }
-
+void CommandInterface::Recognize(unsigned id, const std::string& word)const
+{
+  if(id<0||id>=automatas.size())
+  {
+    std::cout<<"Error! There is no automata with this id.\n";
+    return;
+  }
+  std::cout<<std::boolalpha<<automatas[id]->Recognize(word)<<'\n';
+}
 void CommandInterface::CreateByRegex(const std::string &regex)
 {
   if(!Automata::ExpressionIsValid(regex))

@@ -84,7 +84,7 @@ TEST_SUITE("Testing logical methods"){
 }
 
 int main(){
-  doctest::Context().run();
-  //CommandInterface& Interface=CommandInterface::Initialize();
-  //Interface.Run();
+  //doctest::Context().run();
+  CommandInterface& Interface=CommandInterface::Initialize();
+  Interface.Run();
  }
