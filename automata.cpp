@@ -687,14 +687,10 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
     std::vector<State*>resultStates;
     std::vector<std::vector<State*>*>statesQueue;
     std::vector<State*> initialClosure=EpsiloneClosure(initialStates);
-    
-    State initialState=ConvertClosureToState(initialClosure);
-    initialState.setInitial(true);
-    resultStates.push_back(&initialState);
-    State errorState("I'm error",0,0);
-    
-    statesQueue.push_back(&initialClosure);
 
+    State errorState("I'm error",0,0);    
+    statesQueue.push_back(&initialClosure);
+    bool firstIteration=1;//Flag needed to set the initial state
     while (!statesQueue.empty())
     {
       for (size_t i = 0; i < ALPHABET_SIZE; i++)
@@ -705,8 +701,12 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
        {
           std::vector<State*>epsClosure=EpsiloneClosure(connectedStates);
           State startState=ConvertClosureToState(*statesQueue[0]);
-          State endState=ConvertClosureToState(epsClosure);
+          if(firstIteration)
+          {
+            startState.setInitial(true);
+          }
 
+          State endState=ConvertClosureToState(epsClosure);
           resultEdges.push_back(new DeltaRelation(startState,endState,alphabet[i]));
 
           if(!VecContainsState(&endState,resultStates))
@@ -717,9 +717,14 @@ bool Automata::EdgeIsVisited(const DeltaRelation * delta, std::vector<DeltaRelat
        else
        {
           State startState=ConvertClosureToState(*statesQueue[0]);
+          if(firstIteration)
+          {
+            startState.setInitial(true);
+          }
           resultEdges.push_back(new DeltaRelation(startState,errorState,alphabet[i]));
        }
-      }   
+      }
+      firstIteration=false;   
       statesQueue.erase(statesQueue.begin());//Pop the first element
     }
    freeMemory();
