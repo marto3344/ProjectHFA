@@ -61,9 +61,8 @@ class Automata{
     
     std::vector<State*> ConnectedStates(std::vector<State*>&states, const char label);
     State ConvertClosureToState(const std::vector<State*>&closure);
-    std::vector<State*> EpsiloneClosure(std::vector<State*>& states);
+    void EpsiloneClosure(std::vector<State*>& states);
     void FindConnWithEps(State* state, std::vector<State*>& states);
-    bool HasPathTo()const;
     static bool VecContainsState(const State*, const std::vector<State*>& states);
     void freeMemory();
     void copy(const Automata &other);

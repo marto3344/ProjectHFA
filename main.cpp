@@ -8,6 +8,21 @@
 #include"CLI.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
+
+void TestDeterminizitaion()
+{
+  std::ifstream in;
+  in.open("test1.txt");
+  Automata a;
+  in.ignore();
+  in>>a;
+  a.setId(0);
+  a.draw();
+  a.Determinize();
+  a.draw();
+  // std::cout<<"---------------------\n";
+  // a.Print();
+}
 TEST_SUITE("Testing logical methods"){
   TEST_CASE("testEmpty")
   {

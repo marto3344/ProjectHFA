@@ -474,16 +474,20 @@ void CommandInterface::cleanMemory()
 
 void CommandInterface::List() const
 {
-   std::cout<<"There are "<<automatas.size();
-   if(automatas.size()!=0)
+  if(automatas.size()==0)
+  {
+    std::cout<<"There are 0 automtas read from the file "<<openedfile<<'\n';
+    return;
+  }
+   else
    {
      if (automatas.size()==1)
      {
-      std::cout<<"read 1 automata with id 0"; 
+      std::cout<<"Threre was read 1 automata with id 0"; 
      }
      else
      {
-      std::cout<<" read"<<automatas.size()<<" automatas with id from 0 to "<<automatas.size()-1;
+      std::cout<<"There were read "<<automatas.size()<<" automatas with id from 0 to "<<automatas.size()-1;
      }
    }
    std::cout<<'\n';
@@ -572,7 +576,7 @@ void CommandInterface::Concat(unsigned const id1, unsigned const id2)
   *result=automatas[id1]->Concat(*automatas[id2]);
   result->setId(automatas.size());
   automatas.push_back(result);
-  std::cout<<"Created a concat of "<<id1<<" and "<<id2<<"with id: "<<result->getId()<<'\n';
+  std::cout<<"Created a concat of "<<id1<<" and "<<id2<<" with id: "<<result->getId()<<'\n';
 }
 
 void CommandInterface::Un(unsigned const id)

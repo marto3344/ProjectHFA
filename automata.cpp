@@ -624,9 +624,6 @@ bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&vis
         {
             if(!IsOperator(regxWithoutBrackets[i])&&!IsBracket(regxWithoutBrackets[i]))
             {
-               std::cout<<regxWithoutBrackets<<'\n';
-               std::cout<<i<<'\n';
-               std::cout<<regxWithoutBrackets[i]<<'\n';
                throw "An error occured! Please validate regex! The valid opperators are: + * . \n";
             }
             if(regxWithoutBrackets[i]=='*')
@@ -670,12 +667,19 @@ bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&vis
     const size_t ALPHABET_SIZE=36;
     std::vector<State*>initialStates=getInitialStates();
     std::vector<DeltaRelation*>resultEdges;
-    std::vector<State*>resultStates;
+    std::vector<State*>addedStates;
     std::vector<std::vector<State*>*>statesQueue;
-    std::vector<State*> initialClosure=EpsiloneClosure(initialStates);
+    EpsiloneClosure(initialStates);
+    std::vector<State*>*initialPtr=new std::vector<State*>();
 
-    State errorState("I'm error",0,0);    
-    statesQueue.push_back(&initialClosure);
+    for (size_t i = 0; i < initialStates.size(); i++)
+    {
+        initialPtr->push_back(new State(*initialStates[i]));
+    }
+    
+    State errorState("errorState",0,0);
+
+    statesQueue.push_back(initialPtr);
     bool firstIteration=1;//Flag needed to set the initial state
     while (!statesQueue.empty())
     {
@@ -685,23 +689,29 @@ bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&vis
        std::vector<State*>connectedStates=ConnectedStates(*statesQueue[0],alphabet[i]);
        if(!connectedStates.empty())
        {
-          std::vector<State*>epsClosure=EpsiloneClosure(connectedStates);
+          EpsiloneClosure(connectedStates);
           State startState=ConvertClosureToState(*statesQueue[0]);
           if(firstIteration)
           {
             startState.setInitial(true);
           }
-
-          State endState=ConvertClosureToState(epsClosure);
+          State endState=ConvertClosureToState(connectedStates);
           resultEdges.push_back(new DeltaRelation(startState,endState,alphabet[i]));
 
-          if(!VecContainsState(&endState,resultStates))
+          if(!VecContainsState(&endState,addedStates))
           {
-            statesQueue.push_back(&epsClosure);
+            addedStates.push_back(new State(endState));
+            std::vector<State*>*statePtr=new std::vector<State*>();
+            for (size_t i = 0; i < connectedStates.size(); i++)
+            {
+                statePtr->push_back(new State(*connectedStates[i]));
+            }
+            statesQueue.push_back(statePtr);
           }
        }
        else
        {
+          EpsiloneClosure(*statesQueue[0]);
           State startState=ConvertClosureToState(*statesQueue[0]);
           if(firstIteration)
           {
@@ -710,12 +720,23 @@ bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&vis
           resultEdges.push_back(new DeltaRelation(startState,errorState,alphabet[i]));
        }
       }
-      firstIteration=false;   
+      firstIteration=false;
+      for (State* state:*statesQueue[0])
+      {
+        delete state;
+      }
+      delete statesQueue[0];   
       statesQueue.erase(statesQueue.begin());//Pop the first element
     }
    freeMemory();
-   CalculateStates();
+   for (State* state:addedStates)//Deleting the states array because we will calculate automata states from edges 
+   {
+     delete state;
+   }
+   
+   this->states.clear();
    this->edges=std::move(resultEdges);
+   CalculateStates();
 
  }
 
@@ -751,14 +772,12 @@ bool Automata:: StateFormsCycle(const State& state,const std::vector<State*>&vis
     return result;
  }
 
- std::vector<State*> Automata::EpsiloneClosure(std::vector<State*>&states)
+ void Automata::EpsiloneClosure(std::vector<State*>&states)
  {
-    std::vector<State*>result;
     for (State*state:states)
     {  
-     FindConnWithEps(state,result);
+     FindConnWithEps(state,states);
     }
-    return result;
  }
 
  void Automata::FindConnWithEps(State *state, std::vector<State*>&states)
